@@ -3,109 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SA-RP Mobile HUD</title>
+    <title>SA-RP Mobile Phone</title>
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Rajdhani:wght@500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="announce.css">
-    <link rel="stylesheet" href="hud_mobile.css">
-    <link rel="stylesheet" href="notify.css">
-    <link rel="stylesheet" href="group_notify.css">
-    <link rel="stylesheet" href="radial.css">
-    <link rel="stylesheet" href="loading.css">
+    
     <link rel="stylesheet" href="phone.css">
 </head>
 <body>
-
-    <div id="mobile-hud" class="hud-container">
-        <div class="hud-top-right hud-element" id="hud-info">
-            <div class="server-card">
-                <div class="brand-wrapper">
-                    <img src="https://sarphost.sa-rp.net/SARP-CEF-nvthihi/images/logo_sarp_shop.png" class="server-logo-img" alt="Logo">
-                    <div class="brand-text">
-                        <div class="brand-main">SA-RP <span>CITY</span></div>
-                        <div class="brand-sub">MOBILE CLIENT</div>
-                    </div>
-                </div>
-                <div class="meta-info">
-                    <div class="meta-id">ID: <span id="player-id">--</span></div>
-                    <div class="meta-online"><i class="fa-solid fa-signal"></i> <span id="player-count">--</span></div>
-                </div>
-            </div>
-            <div class="info-panel">
-                <div class="main-info">
-                    <div class="player-name" id="player-name">Loading...</div>
-                    <div class="money-val">$<span id="player-money">0</span></div>
-                </div>
-                <div class="faction-row">
-                    <div class="job-name" id="player-job">Citizen</div>
-                    <div class="faction-badge faction-police"><i class="fa-solid fa-shield-halved"></i> <span id="police-count">0</span></div>
-                    <div class="faction-badge faction-medic"><i class="fa-solid fa-user-nurse"></i> <span id="medic-count">0</span></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="hud-bottom-left hud-element" id="hud-stats">
-            <div class="hex-stat hp"><div class="hex-fill" id="hp-fill"></div><div class="hex-inner"><i class="fa-solid fa-heart stat-icon"></i></div></div>
-            <div class="hex-stat arm"><div class="hex-fill" id="arm-fill"></div><div class="hex-inner"><i class="fa-solid fa-shield stat-icon"></i></div></div>
-            <div class="hex-stat hun"><div class="hex-fill" id="hun-fill"></div><div class="hex-inner"><i class="fa-solid fa-burger stat-icon"></i></div></div>
-            <div class="hex-stat thi"><div class="hex-fill" id="thi-fill"></div><div class="hex-inner"><i class="fa-solid fa-droplet stat-icon"></i></div></div>
-            <div class="hex-stat str"><div class="hex-fill" id="str-fill"></div><div class="hex-inner"><i class="fa-solid fa-brain stat-icon"></i></div></div>
-        </div>
-
-        <div class="hud-bottom-right hud-element" id="weapon-hud" style="display: none;">
-            <div class="weapon-plate">
-                <div class="weapon-img-wrapper">
-                    <img src="" class="weapon-img" id="weapon-img" alt="Weapon">
-                </div>
-                <div class="ammo-cluster">
-                    <div class="ammo-big" id="ammo-clip">0</div>
-                    <div class="ammo-small"><span id="ammo-total">None</span></div>
-                    <div class="mag-bar" id="mag-bar"></div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <div id="notify-container"></div>
-    <div id="group-container"></div>
-
-    <div id="announcement-container">
-        <div class="ann-inner">
-            <div class="ann-header">
-                <div class="ann-badge"><div class="ann-pulse"></div>SA-RP CITY</div>
-                <div class="ann-server-label">THÔNG BÁO</div>
-            </div>
-            <div class="ann-body">
-                <div class="ann-scroll"><span id="announcement-text">System Online</span></div>
-            </div>
-            <div class="ann-progress-line"><div class="ann-progress-fill" id="ann-bar"></div></div>
-        </div>
-    </div>
-
-    <div class="radial-menu-container" id="menuContainer">
-        <div class="radial-menu">
-            <svg viewBox="0 0 500 500" id="menuSvg">
-                <g class="center-circle" onclick="closeMenu()" id="centerBtn">
-                    <circle cx="250" cy="250" r="45" class="center-bg"/>
-                    <text x="250" y="250" class="exit-text">CLOSE</text>
-                </g>
-            </svg>
-        </div>
-    </div>
-
-    <div id="orbit-loader">
-        <div class="circle-wrapper">
-            <div class="track-ring"></div>
-            <div class="inner-spinner"></div>
-            <svg class="progress-svg"><circle class="progress-stroke" id="progress-circle" cx="40" cy="40" r="35"></circle></svg>
-            <i class="fa-solid fa-microchip main-icon" id="action-icon"></i>
-        </div>
-        <div class="info-box">
-            <div class="action-label" id="action-text">LOADING...</div>
-            <div class="percent-label" id="percent-text">0%</div>
-        </div>
-    </div>
 
     <div id="phone-wrapper">
         <div class="iphone-body">
@@ -613,12 +517,6 @@
         </div>
     </div>
 
-    <script src="js/announce.js"></script>
-    <script src="js/hud_mobile.js"></script>
-    <script src="js/notify.js"></script>
-    <script src="js/group_notify.js"></script>
-    <script src="js/radial.js"></script>
-    <script src="js/loading.js"></script>
     <script src="js/phone.js"></script>
 </body>
 </html>
