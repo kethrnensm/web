@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CEF Example Web</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="hub/phone.css">
+
     <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
 <script>
     // Khởi tạo vConsole ngay lập tức
@@ -28,6 +30,513 @@
         </div>
     </div>
     <div id="notify-container"></div>
-    <script src="script.js"></script>
+        <div id="phone-wrapper">
+        <div class="iphone-body">
+            
+            <div class="ph-modal-overlay" id="ph-add-contact-modal">
+                <div class="ph-modal-box">
+                    <h3>Thêm Liên Hệ</h3>
+                    <p>Nhập thông tin người dùng mới</p>
+                    <input type="text" id="ph-new-name" placeholder="Tên liên hệ (1-31 ký tự)" maxlength="31" autocomplete="off">
+                    <input type="number" id="ph-new-number" placeholder="Số điện thoại" autocomplete="off">
+                    
+                    <div class="ph-modal-btns">
+                        <button class="ph-btn-cancel" onclick="closeAddContactModal()">Hủy</button>
+                        <button class="ph-btn-save" onclick="submitNewContact()">Lưu</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ph-modal-overlay" id="ph-add-photo-modal" style="z-index: 10005;">
+                <div class="ph-modal-box">
+                    <h3>Thêm Ảnh Mới</h3>
+                    <p style="margin-bottom: 15px; font-size: 13px; color: #888;">Chọn ảnh từ điện thoại hoặc dán link</p>
+                    
+                    <input type="file" id="ph-new-photo-file" accept="image/*" style="background: transparent; padding: 0; margin-bottom: 5px; border: none;">
+                    
+                    <div style="margin: 10px 0; font-size: 12px; color: #888; font-weight: bold;">HOẶC DÁN LINK</div>
+                    
+                    <input type="text" id="ph-new-photo-url" placeholder="https://..." autocomplete="off">
+                    
+                    <div id="ph-upload-status" style="display: none; font-size: 12px; margin-bottom: 10px; font-weight: 600;"></div>
+
+                    <div class="ph-modal-btns">
+                        <button class="ph-btn-cancel" onclick="closeAddPhotoModal()">Hủy</button>
+                        <button class="ph-btn-save" onclick="submitNewPhoto()">Lưu ảnh</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ph-status-bar">
+                <span id="ph-clock">12:00</span>
+                <div class="ph-status-icons">
+                    <i class="fa-solid fa-signal"></i>
+                    <i class="fa-solid fa-wifi"></i>
+                    <i class="fa-solid fa-battery-full"></i>
+                </div>
+            </div>
+
+            <div id="ph-call-banner" class="ph-call-banner">
+                <div class="ph-call-left">
+                    <div class="ph-caller-name" id="ph-caller-name">Không xác định</div>
+                    <div class="ph-caller-number" id="ph-caller-number">SDT: ???</div>
+                </div>
+
+                <div class="ph-call-right">
+                    <button class="btn-decline" onclick="declineCall()">Từ chối</button>
+                    <button class="btn-answer" onclick="answerCall()">Nghe</button>
+                </div>
+            </div>
+
+            <div id="ph-sms-notify" class="ph-sms-notify">
+                <div class="ph-sms-notify-icon"><i class="fa-solid fa-comment"></i></div>
+                <div class="ph-sms-notify-content">
+                    <div class="ph-sms-notify-name" id="notify-name">Tên người gửi</div>
+                    <div class="ph-sms-notify-text" id="notify-text">Nội dung tin nhắn sẽ hiện ở đây...</div>
+                </div>
+            </div>
+
+            <div class="ph-screen active" id="app-home">
+                <div class="ph-grid">
+                    <div class="ph-app-icon" onclick="openApp('dialer')">
+                        <div class="ph-ico-box bg-green"><i class="fa-solid fa-phone"></i></div>
+                        <span>Điện thoại</span>
+                    </div>
+                    <div class="ph-app-icon" onclick="openApp('contacts')">
+                        <div class="ph-ico-box bg-gray"><i class="fa-solid fa-address-book"></i></div>
+                        <span>Danh bạ</span>
+                    </div>
+                    <div class="ph-app-icon" onclick="openApp('bank')">
+                        <div class="ph-ico-box bg-purple"><i class="fa-solid fa-building-columns"></i></div>
+                        <span>Ngân hàng</span>
+                    </div>
+                    <div class="ph-app-icon" onclick="openApp('services')">
+                        <div class="ph-ico-box" style="background: linear-gradient(#344c52, #9e8d76);">
+                            <i class="fa-solid fa-bell-concierge"></i>
+                        </div>
+                        <span>Dịch vụ</span>
+                    </div>
+                    <div class="ph-app-icon" onclick="triggerServerApp('sa_ads')">
+                        <div class="ph-ico-box bg-orange"><i class="fa-solid fa-bullhorn"></i></div>
+                        <span>SA ADS</span>
+                    </div>
+                    <div class="ph-app-icon" onclick="triggerServerApp('jobs')">
+                        <div class="ph-ico-box bg-cyan"><i class="fa-solid fa-briefcase"></i></div>
+                        <span>Việc làm</span>
+                    </div>
+                    <div class="ph-app-icon" onclick="openApp('tacto')">
+                        <div class="ph-ico-box" style="background: linear-gradient(#1b1c1d, #1b618a);">
+                            <img src="https://sarphost.sa-rp.net/SARP-CEF-nvthihi/images/phone/content1.png" class="ph-app-img-full" />
+                        </div>
+                        <span>Twitch</span>
+                    </div>
+                     <div class="ph-app-icon">
+                        <div class="ph-ico-box bg-red"><i class="fa-solid fa-gear"></i></div>
+                        <span>Cài đặt</span>
+                    </div>
+                    <div class="ph-app-icon" onclick="openApp('gallery')">
+                        <div class="ph-ico-box" style="background: linear-gradient(#f6d365, #fda085);"><img src="https://sarphost.sa-rp.net/SARP-CEF-nvthihi/images/phone/content.png" class="ph-app-img-full" /></div>
+                        <span>Bộ sưu tập</span>
+                    </div>
+                    <div class="ph-app-icon" onclick="openApp('market')">
+                        <div class="ph-ico-box bg-cyan"><img src="https://sarphost.sa-rp.net/SARP-CEF-nvthihi/images/phone/content2.png" class="ph-app-img-full" /></div>
+                        <span>Biến động</span>
+                    </div>
+                    <div class="ph-app-icon" onclick="triggerServerApp('pvplobby')">
+                        <div class="ph-ico-box bg-cyan"><img src="https://sarphost.sa-rp.net/SARP-CEF-nvthihi/images/phone/pvp.png" class="ph-app-img-full" /></div>
+                        <span>PvP</span>
+                    </div>
+                </div>
+
+                <div class="ph-dock">
+                    <div class="ph-app-icon" onclick="openApp('dialer')">
+                        <div class="ph-ico-box bg-green"><i class="fa-solid fa-phone"></i></div>
+                    </div>
+                    <div class="ph-app-icon">
+                        <div class="ph-ico-box bg-blue"><i class="fa-regular fa-compass"></i></div>
+                    </div>
+                    <div class="ph-app-icon" onclick="openApp('messages')">
+                        <div class="ph-ico-box bg-yellow"><i class="fa-solid fa-comment-sms"></i></div>
+                    </div>
+                    <div class="ph-app-icon" onclick="openCameraMode()">
+                        <div class="ph-ico-box bg-dark"><i class="fa-solid fa-camera"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ph-screen" id="app-dialer">
+                <div class="ph-dialer-display">
+                    <div id="ph-input-num"></div>
+                    <div class="ph-add-contact" onclick="addContactFromDialer()">Thêm vào danh bạ</div>
+                </div>
+
+                <div class="ph-numpad">
+                    <div class="num-btn" onclick="dial('1')">1</div>
+                    <div class="num-btn" onclick="dial('2')">2</div>
+                    <div class="num-btn" onclick="dial('3')">3</div>
+                    <div class="num-btn" onclick="dial('4')">4</div>
+                    <div class="num-btn" onclick="dial('5')">5</div>
+                    <div class="num-btn" onclick="dial('6')">6</div>
+                    <div class="num-btn" onclick="dial('7')">7</div>
+                    <div class="num-btn" onclick="dial('8')">8</div>
+                    <div class="num-btn" onclick="dial('9')">9</div>
+                    <div class="num-btn" onclick="dial('*')">*</div>
+                    <div class="num-btn" onclick="dial('0')">0</div>
+                    <div class="num-btn" onclick="dial('#')">#</div>
+                </div>
+
+                <div class="ph-call-actions">
+                    <div style="width: 65px"></div>
+                    <div class="call-btn" onclick="makeCall()">
+                        <i class="fa-solid fa-phone"></i>
+                    </div>
+                    <div class="del-btn" onclick="dial('del')">
+                        <i class="fa-solid fa-delete-left"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ph-screen" id="app-contacts">
+                <div class="ph-app-header">
+                    <h2>Danh bạ</h2>
+                    <i class="fa-solid fa-plus" onclick="addNewContact()"></i>
+                </div>
+                <div class="ph-search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Tìm kiếm..." oninput="searchContact(this.value)">
+                </div>
+                <div class="ph-contact-list" id="ph-contact-list">
+                </div>
+            </div>
+
+            <div class="ph-screen" id="app-messages">
+                <div class="ph-app-header">
+                    <h2>Tin nhắn</h2>
+                    <i class="fa-solid fa-pen-to-square" onclick="openNewMsgModal()"></i>
+                 </div>
+                <div class="ph-search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Tìm kiếm tin nhắn...">
+                </div>
+                <div class="ph-msg-list" id="ph-msg-list">
+                    </div>
+            </div>
+
+            <div class="ph-screen" id="app-chat">
+                <div class="ph-chat-header">
+                    <div class="ph-chat-back" onclick="openApp('messages')">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </div>
+                    <div class="ph-chat-title" id="ph-chat-title">
+                        <div class="chat-name">Tên Người Nhận</div>
+                        <div class="chat-sub">Online</div>
+                    </div>
+                    <div class="ph-chat-info-btn" onclick="openChatOptions()"><i class="fa-solid fa-circle-info"></i></div>
+                </div>
+                
+                <div class="ph-chat-body" id="ph-chat-body">
+                    </div>
+
+                <div class="ph-chat-input-area">
+                    <i class="fa-solid fa-camera"></i>
+                    <div class="chat-input-wrapper">
+                        <input type="text" id="ph-chat-input" placeholder="Tin nhắn iMessage..." onkeypress="handleChatEnter(event)" autocomplete="off">
+                    </div>
+                    <i class="fa-solid fa-paper-plane btn-send-msg" onclick="sendChatMessage()"></i>
+                </div>
+            </div>
+
+            <div class="ph-modal-overlay" id="ph-new-msg-modal">
+                <div class="ph-modal-box">
+                    <h3>Tin nhắn mới</h3>
+                    <p>Nhập số điện thoại người nhận</p>
+                    <input type="number" id="ph-new-msg-num" placeholder="Số điện thoại" autocomplete="off">
+                    <div class="ph-modal-btns">
+                        <button class="ph-btn-cancel" onclick="closeNewMsgModal()">Hủy</button>
+                        <button class="ph-btn-save" onclick="startNewChat()">Tiếp tục</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ph-modal-overlay" id="ph-chat-opt-modal">
+                <div class="ph-modal-box">
+                    <h3 id="ph-opt-name">Tên liên hệ</h3>
+                    <p id="ph-opt-num" style="margin-bottom: 20px;">Số điện thoại</p>
+                    <div class="ph-modal-btns" style="flex-direction: column; gap: 8px;">
+                        <button class="ph-btn-save" style="background: #34c759;" onclick="callFromChat()">Gọi điện thoại</button>
+                        <button class="ph-btn-cancel" onclick="closeChatOptions()">Đóng</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ph-screen" id="app-bank">
+                <div class="ph-bank-header">
+                    <h2>SA-Bank</h2>
+                    <i class="fa-solid fa-clock-rotate-left" onclick="openApp('bank-history')"></i>
+                </div>
+                
+                <div class="ph-bank-card-mini">
+                    <div class="ph-card-left">
+                        <div class="ph-card-title">Số dư khả dụng</div>
+                        <div class="ph-card-balance">$<span id="ph-bank-balance">0</span></div>
+                    </div>
+                    <div class="ph-card-right">
+                        <i class="fa-brands fa-cc-visa"></i>
+                    </div>
+                </div>
+
+                <div class="ph-bank-form">
+                    <h3>Chuyển khoản</h3>
+                    <div class="ph-input-group">
+                        <label>Người nhận (SĐT)</label>
+                        <input type="number" id="ph-bank-target" placeholder="Ví dụ: 123456" autocomplete="off">
+                    </div>
+                    <div class="ph-input-group">
+                        <label>Số tiền ($)</label>
+                        <input type="number" id="ph-bank-amount" placeholder="Tối đa 1,000,000" autocomplete="off">
+                    </div>
+                    <div class="ph-input-group">
+                        <label>Nội dung</label>
+                        <input type="text" id="ph-bank-msg" placeholder="Nhập nội dung..." maxlength="50" autocomplete="off">
+                    </div>
+                    
+                    <button class="ph-bank-btn" onclick="submitBankTransfer()">XÁC NHẬN CHUYỂN</button>
+                </div>
+            </div>
+
+            <div class="ph-screen" id="app-bank-history">
+                <div class="ph-bank-header">
+                    <i class="fa-solid fa-chevron-left" onclick="openApp('bank')" style="font-size: 20px; color: #007aff; cursor: pointer;"></i>
+                    <h2>Lịch sử</h2>
+                    <div style="width: 20px;"></div> </div>
+                
+                <div class="ph-bank-hist-list" id="ph-bank-hist-list">
+                    </div>
+            </div>
+
+            <div class="ph-screen" id="app-tacto">
+                <div class="ph-tacto-header">
+                    <h2>SA-Tacto</h2>
+                    <i class="fa-solid fa-pen-to-square" onclick="openNewPostModal()"></i>
+                </div>
+                <div class="ph-tacto-feed" id="ph-tacto-feed"></div>
+            </div>
+
+            <div class="ph-modal-overlay" id="ph-tacto-post-modal">
+                <div class="ph-modal-box" style="width: 90%;">
+                    <h3>Tạo bài viết mới</h3>
+                    <textarea id="ph-tacto-new-text" placeholder="Bạn đang nghĩ gì?" rows="3" style="width:100%; border-radius:10px; padding:10px; border:1px solid #ddd; margin-bottom:10px; font-family:'Inter'; resize:none; outline:none;"></textarea>
+                    
+                    <div id="ph-tacto-img-preview" style="display:none; position:relative; margin-bottom:15px;">
+                        <img id="ph-tacto-preview-src" src="" style="width:100%; max-height:180px; object-fit:cover; border-radius:10px; border: 1px solid #ddd;">
+                        <i class="fa-solid fa-circle-xmark" onclick="removeTactoImg()" style="position:absolute; top:8px; right:8px; color:#ff3b30; font-size:22px; cursor:pointer; background:#fff; border-radius:50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);"></i>
+                    </div>
+                    
+                    <button onclick="openGalleryPicker()" style="background: #f2f2f7; color: #007aff; width: 100%; margin-bottom: 15px; border-radius: 10px; padding: 12px; border: none; font-weight: 600; font-family:'Inter'; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;">
+                        <i class="fa-solid fa-images"></i> Chọn ảnh từ Bộ sưu tập
+                    </button>
+                    
+                    <div class="ph-modal-btns">
+                        <button class="ph-btn-cancel" onclick="closeNewPostModal()">Hủy</button>
+                        <button class="ph-btn-save" onclick="submitTactoPost()" style="background:#6441a5;">Đăng bài</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ph-modal-overlay" id="ph-gallery-picker-modal" style="z-index: 9999;">
+                <div class="ph-modal-box" style="width: 90%; height: 75%; display: flex; flex-direction: column; padding: 15px; border-radius: 20px;">
+                    <h3 style="margin: 0 0 15px 0;">Chọn một bức ảnh</h3>
+                    
+                    <div class="ph-gallery-grid" id="ph-picker-grid" style="flex: 1; overflow-y: auto; margin-bottom: 15px;">
+                        </div>
+                    
+                    <button class="ph-btn-cancel" onclick="closeGalleryPicker()" style="width: 100%; padding: 12px; border-radius: 10px;">Hủy bỏ</button>
+                </div>
+            </div>
+
+            <div class="ph-image-viewer" id="ph-image-viewer" onclick="closeImageViewer()">
+                <img id="ph-viewer-img" src="">
+            </div>
+            
+            <div class="ph-modal-overlay" id="ph-tacto-cmt-modal">
+                <div class="ph-modal-box" style="width: 100%; height: 75%; border-radius: 25px 25px 0 0; position: absolute; bottom: 0; display: flex; flex-direction: column; padding: 0;">
+                    
+                    <div style="padding: 15px 20px; border-bottom: 1px solid #f2f2f7; display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 25px 25px 0 0;">
+                        <h3 style="margin:0; font-size: 16px;">Bình luận</h3>
+                        <i class="fa-solid fa-xmark" onclick="closeComments()" style="font-size: 20px; color: #8e8e93; cursor:pointer;"></i>
+                    </div>
+                    
+                    <div class="tacto-cmt-list" id="tacto-cmt-list" style="flex: 1; overflow-y: auto; padding: 15px;">
+                        </div>
+                    
+                    <div style="padding: 12px 15px 25px 15px; border-top: 1px solid #f2f2f7; display: flex; gap: 10px; background: #f9f9f9;">
+                        <input type="text" id="tacto-cmt-input" placeholder="Viết bình luận..." style="flex:1; padding: 12px 15px; border-radius: 25px; border: 1px solid #ddd; outline: none; font-family: 'Inter';">
+                        <button onclick="submitComment()" style="background: #6441a5; color: #fff; border: none; border-radius: 25px; padding: 0 18px; font-weight: bold; cursor: pointer;">Gửi</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ph-screen" id="app-camera" style="background: transparent;">
+                <div class="cam-grid">
+                    <div class="cam-line-h1"></div>
+                    <div class="cam-line-h2"></div>
+                    <div class="cam-line-v1"></div>
+                    <div class="cam-line-v2"></div>
+                </div>
+                
+                <div class="cam-focus"></div>
+
+                <div class="cam-controls">
+                    <div class="cam-btn" onclick="closeCameraMode()"><i class="fa-solid fa-xmark"></i> Thoát</div>
+                    <div class="cam-shutter" onclick="takePhoto()">
+                        <div class="cam-shutter-inner"></div>
+                    </div>
+                    <div class="cam-btn"><i class="fa-solid fa-bolt"></i></div>
+                </div>
+
+                <div id="cam-flash" class="cam-flash-overlay"></div>
+            </div>
+
+            <div class="ph-screen" id="app-gallery" style="background: #fff; padding-top: 45px; display: flex; flex-direction: column;">
+                <div class="ph-app-header">
+                    <h2>Ảnh của tôi</h2>
+                    <i class="fa-solid fa-plus" onclick="openAddPhotoModal()"></i>
+                </div>
+                
+                <div class="ph-gallery-grid" id="ph-gallery-grid">
+                    </div>
+            </div>
+
+            <div id="ph-context-menu" class="ph-context-menu">
+                <div class="ph-context-item text-danger" onclick="confirmDeleteFromMenu()">
+                    <i class="fa-solid fa-trash"></i> Xóa ảnh này
+                </div>
+                <div class="ph-context-item" onclick="hideContextMenu()">
+                    <i class="fa-solid fa-xmark"></i> Hủy bỏ
+                </div>
+            </div>
+
+            <div class="ph-modal-overlay" id="ph-confirm-delete-modal" style="z-index: 10005;">
+                <div class="ph-modal-box">
+                    <h3 style="color: #ff3b30;">Xóa bức ảnh này?</h3>
+                    <p style="margin-bottom: 15px; font-size: 13px; color: #888;">Bức ảnh này sẽ bị xóa vĩnh viễn khỏi thiết bị. Bạn không thể hoàn tác.</p>
+                    
+                    <div class="ph-modal-btns">
+                        <button class="ph-btn-cancel" onclick="closeConfirmDeleteModal()" style="color: #007aff; background: #e5e5ea;">Hủy</button>
+                        <button class="ph-btn-save" onclick="executeDeletePhoto()" style="background: #ff3b30; color: #fff;">Xóa ảnh</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ph-screen" id="app-services" style="background: #f2f2f7; padding-top: 45px; color: #000;">
+                <div class="ph-app-header">
+                    <h2>Dịch vụ 911</h2>
+                </div>
+                
+                <div class="ph-service-list">
+                    <div class="ph-service-item" onclick="openServiceInput('police', 'Cảnh sát LSPD', 'Lý do cần cảnh sát (VD: Bị cướp, tai nạn...)')">
+                        <div class="service-icon" style="background: #007aff;"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="service-info">
+                            <div class="service-name">Cảnh sát (LSPD)</div>
+                            <div class="service-desc">Báo cáo tội phạm, khẩn cấp</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right service-arrow"></i>
+                    </div>
+
+                    <div class="ph-service-item" onclick="openServiceInput('ems', 'Cấp cứu EMS', 'Tình trạng y tế (VD: Bị thương nặng...)')">
+                        <div class="service-icon" style="background: #ff3b30;"><i class="fa-solid fa-truck-medical"></i></div>
+                        <div class="service-info">
+                            <div class="service-name">Bác sĩ (EMS)</div>
+                            <div class="service-desc">Hỗ trợ y tế khẩn cấp</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right service-arrow"></i>
+                    </div>
+
+                    <div class="ph-service-item" onclick="submitDirectService('mechanic')">
+                        <div class="service-icon" style="background: #ff9500;"><i class="fa-solid fa-wrench"></i></div>
+                        <div class="service-info">
+                            <div class="service-name">Cứu hộ (Mechanic)</div>
+                            <div class="service-desc">Sửa chữa, kéo xe</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right service-arrow"></i>
+                    </div>
+
+                    <div class="ph-service-item" onclick="submitDirectService('taxi')">
+                        <div class="service-icon" style="background: #34c759;"><i class="fa-solid fa-taxi"></i></div>
+                        <div class="service-info">
+                            <div class="service-name">Grab Taxi</div>
+                            <div class="service-desc">Gọi xe di chuyển</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right service-arrow"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ph-modal-overlay" id="ph-service-modal" style="z-index: 10005;">
+                <div class="ph-modal-box">
+                    <h3 id="ph-service-title">Gọi Dịch vụ</h3>
+                    <p style="margin-bottom: 15px; font-size: 13px; color: #888;">Vui lòng cung cấp thông tin chi tiết.</p>
+                    <input type="text" id="ph-service-reason" placeholder="Nhập lý do..." autocomplete="off">
+                    <div class="ph-modal-btns">
+                        <button class="ph-btn-cancel" onclick="closeServiceModal()">Hủy</button>
+                        <button class="ph-btn-save" onclick="submitServiceRequest()">Gửi yêu cầu</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ph-screen" id="app-market" style="background: #f2f2f7; padding-top: 45px; overflow: hidden;">
+                
+                <div id="mkt-main-menu" style="display: flex; flex-direction: column; height: 100%;">
+                    <div class="ph-app-header" style="background: #f2f2f7; padding-bottom: 15px; z-index: 10;">
+                        <h2 style="font-size: 26px; color: #000; font-weight: 800; letter-spacing: -0.5px;">Thị trường</h2>
+                    </div>
+                    
+                    <div class="mkt-category-grid">
+                        <div class="mkt-cat-card" style="background: linear-gradient(135deg, #007aff, #5ac8fa);" onclick="openMarketCategory('jobs')">
+                            <i class="fa-solid fa-briefcase mkt-cat-icon"></i>
+                            <div class="mkt-cat-name">Việc làm</div>
+                        </div>
+                        <div class="mkt-cat-card" style="background: linear-gradient(135deg, #ff3b30, #ff9500);" onclick="openMarketCategory('gas')">
+                            <i class="fa-solid fa-gas-pump mkt-cat-icon"></i>
+                            <div class="mkt-cat-name">Giá xăng</div>
+                        </div>
+                        <div class="mkt-cat-card" style="background: linear-gradient(135deg, #34c759, #30b0c7);" onclick="openMarketCategory('wholesale')">
+                            <i class="fa-solid fa-boxes-stacked mkt-cat-icon"></i>
+                            <div class="mkt-cat-name">Chợ đầu mối</div>
+                        </div>
+                        <div class="mkt-cat-card" style="background: linear-gradient(135deg, #5e5ce6, #bf5af2);" onclick="openMarketCategory('diamond')">
+                            <i class="fa-regular fa-gem mkt-cat-icon"></i>
+                            <div class="mkt-cat-name">Kim cương</div>
+                        </div>
+                        <div class="mkt-cat-card" style="background: linear-gradient(135deg, #0077b6, #00b4d8);" onclick="openMarketCategory('fish')">
+                            <i class="fa-solid fa-fish mkt-cat-icon"></i>
+                            <div class="mkt-cat-name">Giá cá</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mkt-detail-view" id="mkt-detail-view">
+                    <div class="mkt-detail-header">
+                        <div class="mkt-back-btn" onclick="closeMarketCategory()">
+                            <i class="fa-solid fa-chevron-left"></i> Trở lại
+                        </div>
+                        <h3 id="mkt-detail-title">Chi tiết</h3>
+                        <div style="width: 60px;"></div> </div>
+                    
+                    <div class="mkt-detail-content" id="mkt-detail-content">
+                        </div>
+                </div>
+                
+            </div>
+
+            <div class="ph-home-zone" onclick="handleHomeBtn()">
+                <div class="ph-home-indicator"></div>
+            </div>
+
+        </div>
+    </div>
+        <script src="script.js"></script>
+    <script src="hub/phone.js"></script>
+    
 </body>
 </html>
