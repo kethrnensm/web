@@ -1,56 +1,61 @@
-// HÀM GỬI DỮ LIỆU LÊN SERVER PAWN CHUẨN CEF SA-MP
+/* ==========================================================
+   NPC MENU SYSTEM - GIAO TIẾP PAWN <-> CEF CHUẨN
+   ========================================================== */
+
+// Hàm gửi sự kiện CEF lên server Pawn
 function sendToPawn(eventName, data = "") {
     if (typeof Cef !== 'undefined' && typeof Cef.sendEvent === 'function') {
         Cef.sendEvent(eventName, String(data));
     } else {
-        // Log debug khi kiểm tra giao diện trên trình duyệt máy tính
-        console.log(`[CEF DEBUG] Event: ${eventName} | Data: ${data}`);
+        // Chỉ dùng để Debug trên PC trình duyệt (nếu không có game)
+        console.log(`[TEST WEB] Gửi Event: ${eventName} | Data: ${data}`);
     }
 }
 
-// 1. Hàm mở menu và nạp dữ liệu động (Được gọi từ Pawn xuống)
+// 1. Hàm được gọi từ Pawn xuống để MỞ menu và nạp dữ liệu động
 window.openNpcMenu = function(json_data) {
     try {
-        // Dữ liệu nhận dạng: {"name": "Tuấn Ngọc", "job": "AE:Now Ship", "text": "..."}
+        // Cấu trúc Json gửi xuống: {"name": "Tuấn Ngọc", "job": "AE:Now Ship", "speech": "Xin chào, tôi là..."}
         const data = JSON.parse(json_data);
         
         if(data.name) document.getElementById('npc-name').innerText = data.name;
         if(data.job) document.getElementById('npc-subtext').innerText = data.job;
-        if(data.text) document.getElementById('npc-speech').innerHTML = data.text;
+        // Phần speech hỗ trợ HTML để dùng highlight màu
+        if(data.speech) document.getElementById('npc-speech').innerHTML = data.speech;
     } catch(e) {
-        console.log("Không dùng dữ liệu động, chạy dữ liệu mặc định.");
+        // Nếu không có dữ liệu JSON gửi xuống, dùng dữ liệu HTML mặc định
+        console.log("CEF không nhận dữ liệu JSON, dùng mặc định.");
     }
 
-    // Hiển thị khung giao diện
-    document.getElementById('npc-container').classList.add('active');
+    // Hiển thị khung giao diện bằng class 'active'
+    document.getElementById('cef-app-npc').classList.add('active');
 }
 
-// 2. Hàm khi chọn một dòng tính năng bất kỳ
-function selectOption(actionName) {
-    // Gửi sự kiện về cho Pawn xử lý (ví dụ: client:npc_select) kèm theo tên hành động
-    sendToPawn('client:npc_select', actionName);
-    
-    // Tùy chọn: Tự động đóng menu sau khi lựa chọn thành công
-    closeNpcMenu();
+// 2. Hàm khi chọn một dòng tính năng
+function npcSelect(action) {
+    // Gửi sự kiện về cho Pawn Server xử lý (client:npc_select_action)
+    // Ví dụ: Bấm "Xin việc", 'action' sẽ là 'apply'
+    sendToPawn('client:npc_select_action', action);
 }
 
-// 3. Hàm đóng menu (Bấm nút đóng hoặc gọi từ Pawn)
+// 3. Hàm ĐÓNG menu (Bấm nút Đóng hoặc gọi từ Pawn xuống)
 window.closeNpcMenu = function() {
-    document.getElementById('npc-container').classList.remove('active');
+    document.getElementById('cef-app-npc').classList.remove('active');
     
-    // Gửi tín hiệu về Pawn để giải phóng tiêu điểm chuột và phím di chuyển
+    // Báo về Pawn để giải phóng chuột (client:npc_close)
     sendToPawn('client:npc_close');
 }
 
-// ĐĂNG KÝ CALLBACK VỚI THƯ VIỆN CEF GAME
+// ĐĂNG KÝ CALLBACK LẮNG NGHE SỰ KIỆN TỪ GAME GỬI XUỐNG
 document.addEventListener("DOMContentLoaded", function() {
     if (typeof Cef !== 'undefined') {
-        Cef.registerEventCallback("server:open_npc_menu", "openNpcMenu");
-        Cef.registerEventCallback("server:close_npc_menu", "closeNpcMenu");
+        Cef.registerEventCallback("server:open_npc_interaction", "openNpcMenu");
+        Cef.registerEventCallback("server:close_npc_interaction", "closeNpcMenu");
     } else {
+        // Dự phòng nếu thư viện load trễ
         document.addEventListener("OnCefInit", function() {
-            Cef.registerEventCallback("server:open_npc_menu", "openNpcMenu");
-            Cef.registerEventCallback("server:close_npc_menu", "closeNpcMenu");
+            Cef.registerEventCallback("server:open_npc_interaction", "openNpcMenu");
+            Cef.registerEventCallback("server:close_npc_interaction", "closeNpcMenu");
         });
     }
 });
