@@ -1,0 +1,779 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root {
+    /* Điều chỉnh scale này để phóng to/thu nhỏ toàn bộ HUD trên Mobile */
+    --hud-scale: 0.45; 
+}
+
+/* --- CONTAINER CHÍNH (WRAPPER) --- */
+#phone-wrapper {
+    position: fixed;
+    /* FIX CHỐNG GIẬT KHI MỞ BÀN PHÍM ẢO */
+    bottom: auto; 
+    top: calc(100vh - 660px); 
+    right: 170px;    
+    width: 320px;   
+    height: 650px;  
+    z-index: 7000;
+    
+    transform-origin: bottom right;
+    
+    /* FIX Z-FIGHTING: Bỏ translateZ(0) */
+    transform: scale(var(--hud-scale)) translateY(150%); 
+    
+    /* FIX TRÀN VRAM: Xoá will-change: transform; */
+    
+    transition: transform 0.4s cubic-bezier(0.32, 1.25, 0.32, 1);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    user-select: none;
+    pointer-events: auto;
+}
+
+/* KHI ĐIỆN THOẠI BẬT LÊN */
+#phone-wrapper.active {
+    transform: scale(var(--hud-scale)) translateY(0); /* Bỏ translateZ(0) */
+}
+
+/* KHI CÓ CUỘC GỌI TỚI */
+#phone-wrapper.peeking {
+    transform: scale(var(--hud-scale)) translateY(87%); /* Bỏ translateZ(0) */
+}
+
+/* --- THÂN MÁY (BODY) --- */
+.iphone-body {
+    width: 100%; height: 100%;
+    background: #000;
+    border-radius: 35px; /* Bo góc mượt hơn cho size nhỏ */
+    border: 6px solid #1c1c1e; /* Viền kim loại mỏng lại */
+    /* [OPT] Gộp box-shadow lại 1 lớp, bỏ lớp spread 0 0 0 1px #333 thừa */
+    box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+    position: relative; 
+    overflow: hidden;
+    background-image: url('https://sarphost.sa-rp.net/SARP-CEF-nvthihi/images/banner_phone.png');
+    background-size: cover; 
+    background-position: center;
+}
+
+/* --- STATUS BAR (PIN, SÓNG) --- */
+.ph-status-bar {
+    position: absolute; top: 14px; left: 0; width: 100%;
+    padding: 0 22px;
+    display: flex; justify-content: space-between;
+    color: #fff; font-size: 10px; font-weight: 600; /* Chữ nhỏ lại */
+    z-index: 200; pointer-events: none;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+.ph-status-icons { display: flex; gap: 4px; }
+
+/* --- MÀN HÌNH CHUNG (SCREENS) --- */
+.ph-screen {
+    position: absolute; inset: 0;
+    padding-top: 25px; padding-bottom: 15px; 
+    display: flex; flex-direction: column;
+    opacity: 0; pointer-events: none; 
+    /* Bỏ translateZ(0) */
+    transform: scale(0.92);
+    transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+    /* Xoá will-change: opacity, transform; */
+    background: #fff; z-index: 10;
+}
+.ph-screen.active { 
+    opacity: 1; pointer-events: auto; 
+    transform: scale(1); /* Bỏ translateZ(0) */
+    z-index: 20; 
+}
+
+#app-home { background: transparent !important; }
+#app-dialer { background: #fff; color: #000; }
+
+/* --- VÙNG CẢM ỨNG NÚT HOME --- */
+.ph-home-zone {
+    position: absolute; bottom: 0; left: 0; width: 100%; 
+    height: 30px; /* Vùng bấm mỏng lại */
+    z-index: 10000; 
+    display: flex; justify-content: center; align-items: center;
+    padding-bottom: 8px; cursor: pointer; pointer-events: auto;
+}
+.ph-home-indicator {
+    width: 80px; height: 4px; /* Thanh gạch ngang dưới mỏng & ngắn lại */
+    background: rgba(255,255,255,0.8); border-radius: 10px; 
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    /* [OPT] Chỉ transition background & opacity, bỏ width/height tốn layout */
+    transition: background 0.2s, opacity 0.2s;
+}
+.ph-home-zone:hover .ph-home-indicator { background: #fff; }
+.ph-home-zone:active .ph-home-indicator { opacity: 0.6; }
+.ph-screen:not(#app-home).active ~ .ph-home-zone .ph-home-indicator { background: rgba(0,0,0,0.3); }
+
+/* --- GRID ICON APPS --- */
+.ph-grid { 
+    display: grid; grid-template-columns: repeat(4, 1fr); 
+    gap: 12px 5px; padding: 15px; margin-top: 10px; /* Thu hẹp khoảng cách app */
+}
+.ph-app-icon { 
+    display: flex; flex-direction: column; align-items: center; 
+    /* [OPT] Bỏ will-change: transform vì chỉ dùng :active, không loop */
+    cursor: pointer; transition: transform 0.1s; position: relative; z-index: 5;
+}
+.ph-app-icon:active { transform: scale(0.9) translateZ(0); opacity: 0.75; }
+.ph-ico-box { 
+    width: 44px; height: 44px; /* Icon nhỏ lại (Gốc 55px) */
+    border-radius: 12px; display: flex; justify-content: center; align-items: center; 
+    color: #fff; font-size: 20px; margin-bottom: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); overflow: hidden; 
+}
+.ph-app-icon span { font-size: 9px; color: #fff; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
+.ph-app-img-full { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; display: block; }
+
+/* MÀU SẮC ICON */
+.bg-green { background: linear-gradient(#4cd964, #2ac845); }
+.bg-gray { background: #8e8e93; }
+.bg-purple { background: linear-gradient(#a18cd1, #fbc2eb); }
+.bg-blue { background: linear-gradient(#4facfe, #00f2fe); }
+.bg-orange { background: #ff9500; }
+.bg-cyan { background: #5ac8fa; }
+.bg-twitch { background: #6441a5; }
+.bg-red { background: #ff3b30; }
+.bg-yellow { background: #ffcc00; }
+.bg-dark { background: #333; }
+
+/* DOCK (THANH DƯỚI CÙNG) */
+.ph-dock { 
+    margin-top: auto; margin-bottom: 15px; margin-left: 10px; margin-right: 10px; 
+    height: 60px; /* Dock lùn lại */
+    background: rgba(255, 255, 255, 0.28); border-radius: 20px; 
+    display: flex; justify-content: space-around; align-items: center; 
+}
+
+/* --- GIAO DIỆN GỌI ĐIỆN (DIALER) --- */
+.ph-dialer-display { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+#ph-input-num { font-size: 26px; font-weight: 600; margin-bottom: 5px; height: 35px; } /* Số gọi nhỏ lại */
+.ph-add-contact { color: #007aff; font-size: 13px; cursor: pointer; }
+
+/* BÀN PHÍM SỐ */
+.ph-numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 30px; margin-bottom: 10px; }
+.num-btn { 
+    width: 50px; height: 50px; /* Nút gọi nhỏ lại */
+    border-radius: 50%; background: #e5e5e5; color: #000; display: flex; justify-content: center; align-items: center; 
+    font-size: 20px; cursor: pointer; transition: background 0.1s; 
+}
+.num-btn:active { background: #ccc; }
+
+.ph-call-actions { display: flex; justify-content: space-between; align-items: center; padding: 0 40px 20px 40px; }
+.call-btn { width: 50px; height: 50px; border-radius: 50%; background: #34c759; color: #fff; font-size: 22px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+.del-btn { width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; color: #888; font-size: 20px; cursor: pointer; }
+
+/* TIÊU ĐỀ CÁC APP KHÁC */
+.ph-app-header h2 { font-size: 20px !important; }
+
+/* --- CALL BANNER SIMPLE STYLE --- */
+.ph-call-banner {
+    position: absolute;
+    /* [OPT] Dùng transform thay top để animation chạy trên GPU, không trigger layout */
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-130%) translateZ(0);
+    width: 90%;
+    background: #1c1c1e;
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex;
+    /* [OPT] Animate transform thay vì top — nhanh hơn, không reflow */
+    will-change: transform;
+    transition: transform 0.4s cubic-bezier(0.32, 1.25, 0.32, 1);
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+    z-index: 5000;
+    color: #fff;
+}
+
+.ph-call-banner.show { 
+    transform: translateX(-50%) translateY(0) translateZ(0);
+}
+
+.ph-call-left {
+    display: flex;
+    flex-direction: column;
+}
+
+.ph-caller-name {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.ph-caller-number {
+    font-size: 12px;
+    color: #a1a1aa;
+    margin-top: 3px;
+}
+
+.ph-call-right {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-decline,
+.btn-answer {
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    /* [OPT] Bỏ will-change: transform vì chỉ :active, không loop */
+    transition: transform 0.1s, opacity 0.1s;
+}
+
+.btn-decline { background: #ff3b30; color: #fff; }
+.btn-answer { background: #34c759; color: #fff; }
+.btn-decline:active, .btn-answer:active { transform: scale(0.95) translateZ(0); opacity: 0.85; }
+
+/* --- APP DANH BẠ (CONTACTS) --- */
+#app-contacts { 
+    background: #f2f2f7; 
+    color: #000; 
+    padding-top: 50px; 
+}
+
+.ph-app-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 20px 15px 20px;
+}
+.ph-app-header h2 { font-size: 28px; font-weight: 700; margin: 0; letter-spacing: -0.5px;}
+.ph-app-header i { font-size: 20px; color: #007aff; cursor: pointer; transition: transform 0.1s; }
+.ph-app-header i:active { transform: scale(0.8); }
+
+/* Thanh tìm kiếm */
+.ph-search-bar {
+    margin: 0 20px 15px 20px;
+    background: #e3e3e8;
+    border-radius: 10px;
+    display: flex; align-items: center;
+    padding: 8px 12px;
+}
+.ph-search-bar i { color: #8e8e93; margin-right: 8px; font-size: 14px;}
+.ph-search-bar input {
+    border: none; background: transparent; outline: none;
+    width: 100%; font-family: 'Inter', -apple-system, sans-serif; font-size: 15px; color: #333;
+}
+.ph-search-bar input::placeholder { color: #8e8e93; }
+
+/* Khu vực cuộn danh sách */
+.ph-contact-list {
+    flex: 1; overflow-y: auto; padding: 0 20px;
+}
+.ph-contact-list::-webkit-scrollbar { display: none; }
+
+/* Từng thẻ liên hệ */
+.ph-contact-item {
+    background: #fff;
+    border-radius: 14px;
+    padding: 12px 15px;
+    display: flex; align-items: center;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+.ph-contact-avatar {
+    width: 42px; height: 42px; min-width: 42px;
+    border-radius: 50%;
+    background: #a18cd1; color: #fff;
+    display: flex; justify-content: center; align-items: center;
+    font-weight: 600; font-size: 18px; margin-right: 12px;
+}
+.ph-contact-info { flex: 1; overflow: hidden; }
+.ph-contact-name { font-weight: 600; font-size: 15px; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+.ph-contact-num { font-size: 13px; color: #8e8e93; }
+
+/* Nút gọi/nhắn tin trong danh bạ */
+.ph-contact-actions { display: flex; gap: 8px; }
+.ph-contact-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #f2f2f7; color: #007aff;
+    display: flex; justify-content: center; align-items: center;
+    /* [OPT] Bỏ will-change: transform vì chỉ dùng :active */
+    cursor: pointer; transition: transform 0.15s, opacity 0.15s; font-size: 14px;
+}
+.ph-contact-btn.call { background: #e4f8eb; color: #34c759; } 
+.ph-contact-btn:active { transform: scale(0.85) translateZ(0); opacity: 0.75; }
+
+/* --- PHONE MODAL (POPUP THÊM DANH BẠ) --- */
+.ph-modal-overlay {
+    position: absolute;
+    top: 0; left: 0; 
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 6000;
+    display: flex; justify-content: center; align-items: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease;
+    /* Xoá will-change: opacity; */
+}
+
+.ph-modal-overlay.active {
+    opacity: 1; pointer-events: auto;
+}
+
+.ph-modal-box {
+    background: #fff;
+    width: 82%;
+    border-radius: 18px;
+    padding: 20px 18px;
+    text-align: center;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    /* Bỏ translateZ(0) */
+    transform: scale(0.9);
+    transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    /* Xoá will-change: transform; */
+}
+
+.ph-modal-overlay.active .ph-modal-box {
+    transform: scale(1); /* Bỏ translateZ(0) */
+}
+
+.ph-modal-box h3 { margin: 0 0 5px 0; font-size: 18px; color: #000; font-weight: 600; }
+.ph-modal-box p { margin: 0 0 15px 0; font-size: 12px; color: #8e8e93; }
+
+.ph-modal-box input {
+    width: 100%; box-sizing: border-box;
+    background: #f2f2f7; border: 1px solid #e5e5ea;
+    border-radius: 10px; padding: 12px; margin-bottom: 12px;
+    font-family: 'Inter', -apple-system, sans-serif; font-size: 14px; color: #333;
+    outline: none; transition: border-color 0.2s, background 0.2s;
+}
+.ph-modal-box input:focus { border-color: #007aff; background: #fff; }
+
+.ph-modal-btns { display: flex; gap: 10px; margin-top: 5px; }
+.ph-modal-btns button {
+    flex: 1; padding: 12px; border: none; border-radius: 10px;
+    font-weight: 600; font-size: 14px; cursor: pointer; transition: transform 0.1s, opacity 0.1s;
+}
+.ph-btn-cancel { background: #e5e5ea; color: #ff3b30; }
+.ph-btn-save { background: #007aff; color: #fff; }
+.ph-btn-cancel:active, .ph-btn-save:active { transform: scale(0.95) translateZ(0); opacity: 0.8; }
+
+/* --- APP TIN NHẮN (DANH SÁCH) --- */
+#app-messages { background: #fff; color: #000; padding-top: 50px; }
+.ph-msg-list { flex: 1; overflow-y: auto; padding: 0 20px; }
+.ph-msg-list::-webkit-scrollbar { display: none; }
+
+.ph-msg-item {
+    display: flex; align-items: center; padding: 12px 0;
+    border-bottom: 1px solid #f2f2f7; cursor: pointer;
+}
+.ph-msg-avatar {
+    width: 48px; height: 48px; min-width: 48px; border-radius: 50%;
+    background: #e5e5ea; display: flex; justify-content: center; align-items: center;
+    font-size: 20px; color: #fff; font-weight: 600; margin-right: 14px;
+}
+.ph-msg-preview { flex: 1; overflow: hidden; }
+.ph-msg-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.ph-msg-name { font-weight: 600; font-size: 16px; color: #000; }
+.ph-msg-time { font-size: 13px; color: #8e8e93; }
+.ph-msg-text { font-size: 14px; color: #8e8e93; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* --- APP CHAT (CHI TIẾT) --- */
+#app-chat { background: #f2f2f7; padding-top: 30px; padding-bottom: 0; }
+.ph-chat-header {
+    /* backdrop-filter blur đã xóa - dùng nền đặc */
+    background: #f2f2f7;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 15px; border-bottom: 1px solid #e5e5ea; z-index: 10;
+}
+.ph-chat-back, .ph-chat-info-btn { color: #007aff; font-size: 20px; cursor: pointer; padding: 5px; }
+.ph-chat-title { text-align: center; }
+.ph-chat-title .chat-name { font-weight: 600; font-size: 15px; color: #000; }
+.ph-chat-title .chat-sub { font-size: 11px; color: #8e8e93; }
+
+/* Khu vực hiển thị tin nhắn */
+.ph-chat-body {
+    flex: 1; overflow-y: auto; padding: 15px;
+    display: flex; flex-direction: column; gap: 10px;
+}
+.ph-chat-body::-webkit-scrollbar { display: none; }
+
+/* Bong bóng chat */
+.chat-bubble { max-width: 75%; padding: 10px 14px; border-radius: 20px; font-size: 14px; line-height: 1.4; word-wrap: break-word;}
+.chat-row { display: flex; width: 100%; margin-bottom: 2px;}
+
+/* Tin nhắn của người khác gửi đến (Bên trái, Xám) */
+.chat-row.received { justify-content: flex-start; }
+.chat-row.received .chat-bubble {
+    background: #e5e5ea; color: #000;
+    border-bottom-left-radius: 4px;
+}
+
+/* Tin nhắn của mình gửi đi (Bên phải, Xanh iMessage) */
+.chat-row.sent { justify-content: flex-end; }
+.chat-row.sent .chat-bubble {
+    background: #007aff; color: #fff;
+    border-bottom-right-radius: 4px;
+}
+
+/* Khung nhập tin nhắn */
+.ph-chat-input-area {
+    background: #f2f2f7; padding: 10px 15px 25px 15px; /* Padding dưới chừa chỗ cho thanh Home */
+    display: flex; align-items: center; gap: 12px;
+}
+.ph-chat-input-area > i { color: #8e8e93; font-size: 22px; cursor: pointer; }
+.ph-chat-input-area > .btn-send-msg { color: #007aff; }
+.chat-input-wrapper { flex: 1; }
+.chat-input-wrapper input {
+    width: 100%; border: 1px solid #e5e5ea; border-radius: 20px;
+    padding: 8px 15px; font-family: 'Inter', -apple-system, sans-serif; font-size: 15px;
+    outline: none; box-sizing: border-box;
+}
+
+/* --- BANNER THÔNG BÁO SMS --- */
+.ph-sms-notify {
+    position: absolute;
+    /* [OPT] Dùng transform thay top để animation GPU, không trigger layout */
+    top: 40px;
+    left: 15px; right: 15px;
+    /* backdrop-filter blur đã xóa */
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 16px;
+    padding: 12px 15px;
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    z-index: 6000;
+    /* [OPT] Animate transform thay vì top, will-change: transform thay vì top */
+    will-change: transform;
+    transition: transform 0.4s cubic-bezier(0.32, 1.25, 0.32, 1);
+    cursor: pointer;
+    transform: translateY(-160%) translateZ(0);
+}
+.ph-sms-notify.show { transform: translateY(0) translateZ(0); } /* Trượt xuống dưới Status Bar */
+.ph-sms-notify-icon {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #34c759; color: #fff;
+    display: flex; justify-content: center; align-items: center; font-size: 16px;
+}
+.ph-sms-notify-content { flex: 1; overflow: hidden; }
+.ph-sms-notify-name { font-weight: 600; font-size: 14px; color: #000; margin-bottom: 2px;}
+.ph-sms-notify-text { font-size: 13px; color: #8e8e93; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+
+/* --- APP NGÂN HÀNG (BANK) - BẢN GỌN GÀNG --- */
+#app-bank { background: #f2f2f7; color: #000; padding-top: 45px; }
+.ph-bank-header { display: flex; justify-content: space-between; align-items: center; padding: 0 20px 10px 20px; }
+.ph-bank-header h2 { font-size: 24px; font-weight: 800; margin: 0; color: #5e5ce6; letter-spacing: -1px;}
+.ph-bank-header i { font-size: 18px; color: #007aff; cursor: pointer; }
+
+/* Thẻ ATM Mini */
+.ph-bank-card-mini {
+    background: linear-gradient(135deg, #5e5ce6, #a259ff);
+    margin: 0 20px 15px 20px; border-radius: 12px; padding: 15px 20px;
+    color: #fff; box-shadow: 0 6px 15px rgba(94, 92, 230, 0.25);
+    display: flex; justify-content: space-between; align-items: center;
+}
+.ph-card-left { display: flex; flex-direction: column; }
+.ph-card-title { font-size: 12px; opacity: 0.9; margin-bottom: 2px; }
+.ph-card-balance { font-size: 24px; font-weight: 700; letter-spacing: 0.5px;}
+.ph-card-right i { font-size: 32px; opacity: 0.8;}
+
+/* Form nhập liệu (Đã tắt cuộn) */
+.ph-bank-form { background: #fff; border-radius: 20px 20px 0 0; padding: 20px; flex: 1; }
+.ph-bank-form h3 { margin: 0 0 15px 0; font-size: 16px; color: #333; }
+
+.ph-input-group { margin-bottom: 12px; }
+.ph-input-group label { display: block; font-size: 11px; color: #8e8e93; margin-bottom: 5px; font-weight: 600; text-transform: uppercase;}
+.ph-input-group input {
+    width: 100%; box-sizing: border-box; background: #f2f2f7; border: 1px solid transparent;
+    border-radius: 8px; padding: 10px 12px; font-family: 'Inter', -apple-system, sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s, background 0.2s;
+}
+.ph-input-group input:focus { border-color: #5e5ce6; background: #fff; }
+
+.ph-bank-btn {
+    width: 100%; background: #5e5ce6; color: #fff; border: none; border-radius: 10px;
+    padding: 12px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 10px;
+    /* [OPT] Bỏ will-change: transform vì chỉ :active */
+    transition: transform 0.1s, background 0.1s;
+}
+.ph-bank-btn:active { transform: scale(0.95) translateZ(0); background: #4b49c6; }
+
+/* --- LỊCH SỬ NGÂN HÀNG --- */
+#app-bank-history { background: #f2f2f7; display: flex; flex-direction: column; padding-top: 45px;}
+.ph-bank-hist-list { flex: 1; overflow-y: auto; padding: 15px; }
+.ph-bank-hist-list::-webkit-scrollbar { display: none; }
+
+.ph-hist-item { 
+    background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 12px; 
+    display: flex; justify-content: space-between; align-items: center; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03); 
+}
+.ph-hist-left { display: flex; align-items: center; gap: 12px; }
+.ph-hist-icon { 
+    width: 38px; height: 38px; border-radius: 50%; 
+    display: flex; justify-content: center; align-items: center; font-size: 16px; color: #fff; 
+}
+.ph-hist-icon.sent { background: #ff3b30; } /* Màu đỏ cho tiền đi */
+.ph-hist-icon.recv { background: #34c759; } /* Màu xanh cho tiền về */
+
+.ph-hist-info { display: flex; flex-direction: column; }
+.ph-hist-name { font-weight: 600; font-size: 14px; color: #000; margin-bottom: 2px;}
+.ph-hist-msg { font-size: 12px; color: #8e8e93; max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.ph-hist-amount { font-weight: 700; font-size: 15px; }
+.ph-hist-amount.sent { color: #ff3b30; }
+.ph-hist-amount.recv { color: #34c759; }
+
+/* --- APP TACTO (TWITCH/TWITTER) --- */
+#app-tacto { background: #f2f2f7; display: flex; flex-direction: column; padding-top: 45px;}
+.ph-tacto-header { display: flex; justify-content: space-between; align-items: center; padding: 0 20px 10px 20px; background: #fff; border-bottom: 1px solid #eaeaea; z-index: 5;}
+.ph-tacto-header h2 { font-size: 22px; font-weight: 800; margin: 0; color: #6441a5; letter-spacing: -0.5px;}
+.ph-tacto-header i { font-size: 20px; color: #6441a5; cursor: pointer; }
+
+.ph-tacto-feed { flex: 1; overflow-y: auto; padding-bottom: 30px;}
+.ph-tacto-feed::-webkit-scrollbar { display: none; }
+
+.tacto-post { background: #fff; margin-bottom: 10px; padding: 15px; border-bottom: 1px solid #eaeaea; }
+.tacto-post-head { display: flex; align-items: center; margin-bottom: 10px; }
+.tacto-avatar { width: 40px; height: 40px; border-radius: 50%; background: #ddd; margin-right: 12px; display: flex; justify-content: center; align-items: center; color: #666; font-weight: bold; overflow: hidden;}
+.tacto-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.tacto-author { font-weight: 700; font-size: 15px; color: #000; }
+.tacto-time { font-size: 12px; color: #8e8e93; }
+
+.tacto-content { font-size: 14px; line-height: 1.5; color: #333; margin-bottom: 10px; word-wrap: break-word;}
+.tacto-image { width: 100%; max-height: 250px; border-radius: 12px; object-fit: cover; margin-bottom: 10px; border: 1px solid #eaeaea;}
+
+.tacto-actions { display: flex; align-items: center; gap: 20px; border-top: 1px solid #f2f2f7; padding-top: 10px;}
+.tacto-action-btn { display: flex; align-items: center; gap: 6px; color: #8e8e93; font-size: 14px; cursor: pointer; transition: color 0.2s; }
+.tacto-action-btn.liked { color: #ff3b30; }
+.tacto-action-btn i { font-size: 18px; }
+
+/* --- TRÌNH XEM ẢNH & BÌNH LUẬN TACTO --- */
+.ph-image-viewer { 
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.9); z-index: 9999; 
+    display: none; justify-content: center; align-items: center; 
+}
+.ph-image-viewer.active { display: flex; animation: fadeIn 0.2s; }
+.ph-image-viewer img { max-width: 95%; max-height: 95%; border-radius: 12px; object-fit: contain; }
+
+.tacto-cmt-item { display: flex; margin-bottom: 15px; }
+.tacto-cmt-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #fff; font-weight: bold; font-size: 12px; margin-right: 10px; flex-shrink: 0;}
+.tacto-cmt-box { background: #f2f2f7; padding: 10px 14px; border-radius: 18px; border-top-left-radius: 4px; max-width: 80%;}
+.tacto-cmt-author { font-weight: 700; font-size: 13px; color: #000; margin-bottom: 3px;}
+.tacto-cmt-text { font-size: 14px; color: #333; line-height: 1.4; word-wrap: break-word;}
+
+/* --- CHẾ ĐỘ CAMERA (FULL SCREEN) --- */
+#phone-wrapper.fullscreen-camera {
+    width: 100vw !important;
+    height: 100vh !important;
+    top: 0 !important; /* Đã cập nhật thành top: 0 */
+    bottom: auto !important; 
+    right: 0 !important;
+    
+    /* Bỏ translateZ(0) */
+    transform: scale(1) !important; 
+    transform-origin: bottom right !important; 
+    
+    border-radius: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    z-index: 9999 !important; 
+}
+
+/* Lột sạch hình nền, viền và màu nền của thân máy để nhìn xuyên thấu */
+#phone-wrapper.fullscreen-camera .iphone-body {
+    background: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+/* GIAO DIỆN VIEW FINDER MÁY ẢNH */
+#app-camera { position: relative; width: 100%; height: 100%; background: transparent; overflow: hidden; }
+
+/* Lưới Camera 3x3 */
+.cam-grid { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.3; }
+.cam-line-h1, .cam-line-h2 { position: absolute; width: 100%; height: 1px; background: #fff; left: 0; }
+.cam-line-h1 { top: 33.33%; } .cam-line-h2 { top: 66.66%; }
+.cam-line-v1, .cam-line-v2 { position: absolute; height: 100%; width: 1px; background: #fff; top: 0; }
+.cam-line-v1 { left: 33.33%; } .cam-line-v2 { left: 66.66%; }
+
+/* Khung lấy nét giữa màn hình */
+.cam-focus {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 120px; height: 120px; border: 1px solid rgba(255,255,255,0.6);
+    pointer-events: none;
+}
+/* Dấu thập ở giữa */
+.cam-focus::after {
+    content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.6);
+}
+
+/* Thanh điều khiển dưới cùng */
+.cam-controls {
+    position: absolute; bottom: 40px; left: 0; width: 100%;
+    display: flex; justify-content: space-around; align-items: center; z-index: 10;
+}
+.cam-btn { color: #fff; font-size: 24px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); cursor: pointer; transition: color 0.2s; }
+.cam-btn:hover { color: #ffd700; }
+.cam-shutter {
+    width: 70px; height: 70px; border-radius: 50%; border: 4px solid #fff;
+    display: flex; justify-content: center; align-items: center; cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5); transition: transform 0.1s;
+    /* [OPT] Bỏ will-change: transform vì chỉ :active */
+}
+.cam-shutter:active { transform: scale(0.9) translateZ(0); }
+.cam-shutter-inner { width: 54px; height: 54px; border-radius: 50%; background: #fff; opacity: 0.9; }
+
+/* Hiệu ứng chớp Flash */
+.cam-flash-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: #fff; opacity: 0; pointer-events: none; z-index: 999;
+    will-change: opacity;
+}
+.cam-flash-overlay.flashing { animation: flashAnim 0.4s ease-out; }
+@keyframes flashAnim {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* --- CONTEXT MENU (CHUỘT PHẢI) --- */
+.ph-context-menu {
+    position: fixed;
+    /* backdrop-filter blur đã xóa */
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    padding: 5px 0;
+    min-width: 150px;
+    z-index: 10000;
+    display: none;
+}
+.ph-context-menu.active {
+    display: block;
+    animation: fadeIn 0.1s ease-out;
+}
+.ph-context-item {
+    padding: 12px 15px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.15s;
+    color: #333;
+}
+.ph-context-item:hover {
+    background: rgba(0,0,0,0.05);
+}
+.ph-context-item.text-danger {
+    color: #ff3b30;
+}
+
+/* --- APP BỘ SƯU TẬP (GALLERY) --- */
+.ph-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px; /* Khoảng cách giữa các ảnh cực mỏng giống iOS */
+    padding: 2px;
+    flex: 1;
+    overflow-y: auto;
+    align-content: start;
+}
+.ph-gallery-grid::-webkit-scrollbar { display: none; }
+
+.ph-gallery-item {
+    aspect-ratio: 1 / 1;
+    background-color: #f2f2f7;
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+/* Dùng opacity thay filter:brightness - nhẹ hơn nhiều */
+.ph-gallery-item:active { opacity: 0.65; }
+
+/* --- APP DỊCH VỤ --- */
+.ph-service-list { padding: 0 20px; }
+.ph-service-item {
+    background: #fff; border-radius: 14px;
+    padding: 12px 15px; display: flex; align-items: center;
+    margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    /* [OPT] Bỏ will-change: transform vì chỉ :active */
+    cursor: pointer; transition: transform 0.15s, opacity 0.15s;
+}
+.ph-service-item:active { transform: scale(0.96) translateZ(0); opacity: 0.85; }
+.service-icon {
+    width: 42px; height: 42px; border-radius: 12px;
+    display: flex; justify-content: center; align-items: center;
+    color: #fff; font-size: 18px; margin-right: 15px;
+}
+.service-info { flex: 1; }
+.service-name { font-weight: 600; font-size: 15px; color: #000; margin-bottom: 3px; }
+.service-desc { font-size: 12px; color: #8e8e93; }
+.service-arrow { color: #c7c7cc; font-size: 14px; }
+
+/* --- APP BIẾN ĐỘNG THỊ TRƯỜNG (DẠNG THẺ & TRƯỢT) --- */
+.mkt-category-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px;
+}
+.mkt-cat-card {
+    border-radius: 20px; padding: 20px 15px;
+    display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between;
+    aspect-ratio: 1 / 1;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    /* [OPT] Bỏ will-change: transform vì chỉ :active */
+    cursor: pointer; transition: transform 0.15s, opacity 0.15s; color: #fff;
+    position: relative; overflow: hidden;
+}
+.mkt-cat-card:active { transform: scale(0.92) translateZ(0); opacity: 0.85; }
+.mkt-cat-card::after { /* Hiệu ứng bóng kính chéo góc */
+    content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    background: linear-gradient(to bottom right, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 100%);
+    pointer-events: none;
+}
+.mkt-cat-icon { font-size: 32px; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+.mkt-cat-name { font-size: 15px; font-weight: 700; text-shadow: 0 1px 3px rgba(0,0,0,0.3); letter-spacing: 0.5px;}
+
+/* --- Màn hình chi tiết trượt ngang --- */
+.mkt-detail-view {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: #f2f2f7; z-index: 50;
+    transform: translateX(100%) translateZ(0);
+    transition: transform 0.3s cubic-bezier(0.32, 1.25, 0.32, 1);
+    will-change: transform;
+    display: flex; flex-direction: column;
+}
+.mkt-detail-view.active { transform: translateX(0) translateZ(0); }
+
+.mkt-detail-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 15px 15px 10px 15px;
+    /* backdrop-filter blur đã xóa */
+    background: #f2f2f7;
+    border-bottom: 1px solid #e5e5ea;
+}
+.mkt-back-btn { color: #007aff; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 5px;}
+.mkt-detail-header h3 { margin: 0; font-size: 16px; font-weight: 700; color: #000; }
+
+.mkt-detail-content { flex: 1; overflow-y: auto; padding: 15px; }
+.mkt-detail-content::-webkit-scrollbar { display: none; }
+
+/* Danh sách chi tiết */
+.mkt-list-box { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+.mkt-list-item { 
+    display: flex; justify-content: space-between; align-items: center; 
+    padding: 14px 15px; border-bottom: 1px solid #f2f2f7; 
+}
+.mkt-list-item:last-child { border-bottom: none; }
+.mkt-list-name { font-size: 14px; font-weight: 600; color: #333; display: flex; align-items: center; gap: 8px;}
+.mkt-list-name i { font-size: 12px; opacity: 0.5; }
+.mkt-list-stats { text-align: right; }
+.mkt-stat-row { display: flex; justify-content: flex-end; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; }
+.mkt-stat-sub { font-size: 11px; color: #8e8e93; font-weight: 500; margin-top: 2px;}
+
+/* Form thẻ đơn (Xăng / Kim cương) */
+.mkt-single-card { background: #fff; border-radius: 20px; padding: 30px 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-top: 20px;}
+.mkt-single-icon { font-size: 50px; margin-bottom: 15px; }
+.mkt-single-price { font-size: 32px; font-weight: 800; color: #000; margin-bottom: 5px;}
+
+/* Màu sắc chỉ số */
+.text-up { color: #34c759 !important; }
+.text-down { color: #ff3b30 !important; }
+.text-neu { color: #8e8e93 !important; }

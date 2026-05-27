@@ -1,0 +1,333 @@
+/* ============================================================
+   HUD MOBILE - OPTIMIZED FOR ANDROID WEBVIEW / SA-MP CEF
+   Mục tiêu: giảm Repaint, Composite layer thừa, RAM, GPU load
+   ============================================================ */
+
+:root {
+    --hud-scale: 0.50;
+    --safe-top: max(15px, env(safe-area-inset-top));
+    --safe-right: max(15px, env(safe-area-inset-right));
+    --safe-bottom: max(15px, env(safe-area-inset-bottom));
+    --safe-left: max(15px, env(safe-area-inset-left));
+}
+
+/* [OPT] margin+padding shorthand, overflow:hidden tránh extra scroll layer */
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+    /* [OPT] Tắt tap highlight trên Android WebView tránh flash đen khi chạm */
+    -webkit-tap-highlight-color: transparent;
+    /* [OPT] Tăng tốc font rendering, giảm aliasing cost */
+    -webkit-font-smoothing: antialiased;
+}
+
+.hud-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: 10;
+    /* [OPT] contain: strict giúp browser giới hạn layout/paint scope,
+       tránh trigger reflow toàn trang mỗi khi cập nhật giá trị HUD */
+    contain: strict;
+}
+
+.hud-hidden { display: none !important; }
+
+
+/* ============================================
+   1. GÓC PHẢI TRÊN (INFO & SERVER)
+   ============================================ */
+.hud-top-right {
+    position: absolute;
+    top: var(--safe-top);
+    right: var(--safe-right);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    width: 320px;
+    font-family: 'Chakra Petch', sans-serif;
+    transform: scale(var(--hud-scale));
+    transform-origin: top right;
+    /* [OPT] Promote lên GPU layer riêng, tránh repaint chung với game canvas */
+    will-change: transform;
+    /* [OPT] contain layout+style: thay đổi nội dung bên trong không trigger
+       reflow ra ngoài block này */
+    contain: layout style;
+}
+
+/* SERVER CARD */
+.server-card {
+    width: 100%;
+    clip-path: polygon(15px 0, 100% 0, 100% 100%, 0 100%, 0 15px);
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* [OPT] Đặt background trực tiếp (tránh tái tính gradient phức tạp) */
+    /* background: rgba(15, 15, 20, 0.92); */
+}
+
+.brand-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+}
+
+.server-logo-img {
+    height: 35px;
+    width: auto;
+    object-fit: contain;
+    /* [OPT] KHÔNG dùng filter: drop-shadow — cực kỳ ngốn GPU trên WebView */
+}
+
+.brand-main {
+    font-size: 18px;
+    font-weight: 800;
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    text-transform: uppercase;
+    /* [OPT] Bỏ text-shadow/glow — mỗi text-shadow là 1 lần vẽ thêm lên layer */
+}
+.brand-main span { color: #00d2ff; }
+.brand-sub { font-size: 9px; color: #a4b0be; letter-spacing: 1.5px; }
+
+.meta-info { text-align: right; }
+
+.meta-id {
+    background: rgba(255,255,255,0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #00d2ff;
+    margin-bottom: 3px;
+    /* [OPT] Bỏ box-shadow nếu không cần thiết */
+}
+
+.meta-online { font-size: 10px; color: #7f8fa6; }
+.meta-online i { color: #2ecc71; margin-right: 3px; }
+
+
+/* INFO PANEL */
+.info-panel {
+    width: 100%;
+    /* [OPT] Đơn giản hóa gradient: bỏ 3 stop → 2 stop, giảm tính toán */
+    background: linear-gradient(90deg, transparent, rgba(20,20,25,0.95));
+    padding: 6px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    border-right: 3px solid #2ecc71;
+    border-radius: 4px;
+    gap: 4px;
+}
+
+.main-info {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.player-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    /* [OPT] Bỏ text-shadow — tiết kiệm 1 lần paint per frame */
+}
+
+.money-val {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: #2ecc71;
+    /* [OPT] Bỏ text-shadow glow màu xanh, WebView Android render rất tốn */
+}
+
+.faction-row { display: flex; gap: 8px; align-items: center; }
+
+.faction-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.faction-police i { color: #54a0ff; }
+.faction-police span { color: #54a0ff; font-weight: 700; margin-left: 2px; }
+.faction-medic i { color: #ff6b81; }
+.faction-medic span { color: #ff6b81; font-weight: 700; margin-left: 2px; }
+
+.job-name {
+    color: #bdc3c7;
+    text-transform: uppercase;
+    font-size: 10px;
+    padding-top: 2px;
+}
+
+
+/* ============================================
+   2. GÓC TRÁI DƯỚI (MÁU / GIÁP / STATS)
+   ============================================ */
+.hud-bottom-left {
+    position: absolute;
+    bottom: var(--safe-bottom);
+    left: var(--safe-left);
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    transform: scale(var(--hud-scale));
+    transform-origin: bottom left;
+    will-change: transform;
+    contain: layout style;
+}
+
+.hex-stat {
+    position: relative;
+    width: 45px; height: 50px;
+    display: flex; justify-content: center; align-items: center;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    background: rgba(30,30,35, 0.6);
+    /* [OPT] Không transition transform, không hover — tránh trigger repaint
+       liên tục khi cảm ứng */
+}
+
+.hex-inner {
+    position: absolute; top: 2px; left: 2px; right: 2px; bottom: 2px;
+    background: rgba(20,20,25, 0.9);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    z-index: 1; display: flex; justify-content: center; align-items: center;
+}
+
+.hex-fill {
+    position: absolute; bottom: 0; left: 0; width: 100%;
+    z-index: 0;
+    /* [OPT] Chỉ transition height — tránh all, giúp browser biết chính xác
+       property nào thay đổi để composite hiệu quả hơn */
+    transition: height 0.15s ease-out;
+    /* [OPT] will-change trên phần tử animate thực sự, không phải container */
+    will-change: height;
+}
+
+/* [OPT] Đơn giản hoá gradient còn 2 màu (Android vẫn render đẹp, nhanh hơn) */
+.hp  .hex-fill { background: linear-gradient(to top, #c0392b, #ff4757); }
+.arm .hex-fill { background: linear-gradient(to top, #2980b9, #3498db); }
+.hun .hex-fill { background: linear-gradient(to top, #d35400, #e67e22); }
+.thi .hex-fill { background: linear-gradient(to top, #16a085, #1abc9c); }
+.str .hex-fill { background: linear-gradient(to top, #8e44ad, #9b59b6); }
+
+.stat-icon {
+    font-size: 14px;
+    color: #fff;
+    z-index: 2;
+    /* [OPT] KHÔNG dùng filter: drop-shadow trên icon */
+}
+
+
+/* ============================================
+   3. GÓC PHẢI DƯỚI (VŨ KHÍ)
+   ============================================ */
+.hud-bottom-right {
+    position: absolute;
+    bottom: var(--safe-bottom);
+    right: calc(var(--safe-right) + 70px);
+    transform: scale(var(--hud-scale));
+    transform-origin: bottom right;
+    will-change: transform;
+    contain: layout style;
+    /* [OPT] Dùng transition opacity thay vì visibility/display để GPU xử lý,
+       không trigger layout */
+    transition: opacity 0.3s ease;
+}
+
+.weapon-plate {
+    display: flex;
+    align-items: center;
+    background: rgba(20, 20, 25, 0.9);
+    clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%, 0% 40%);
+    padding: 8px 15px 8px 25px;
+    min-width: 240px;
+    border-bottom: 2px solid #ff4757;
+    position: relative;
+    font-family: 'Chakra Petch', sans-serif;
+    /* [OPT] Gợi ý browser: đây là phần tử tổng hợp, không dính layout ngoài */
+    isolation: isolate;
+}
+
+/* [OPT] ::after dùng background solid thay vì box-shadow để giảm overdraw */
+.weapon-plate::after {
+    content: '';
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 40%; height: 2px;
+    background: #fff;
+    /* [OPT] box-shadow glow tốn GPU: chỉ giữ nếu thực sự cần thẩm mỹ */
+    /* box-shadow: 0 0 8px #fff; */
+}
+
+.weapon-img-wrapper {
+    width: 100px; height: 50px;
+    margin-right: 10px;
+    display: flex; align-items: center; justify-content: center;
+    /* [OPT] Thay radial-gradient bằng màu tĩnh — gradient ở đây không rõ nét
+       nhưng vẫn bắt GPU vẽ mỗi frame nếu layer bị invalidate */
+    /* background: rgba(255,255,255,0.06); */
+}
+
+.weapon-img {
+    max-width: 100%; max-height: 100%;
+    /* [OPT] KHÔNG filter: drop-shadow trên ảnh PNG súng — đây là thủ phạm
+       số 1 gây drop FPS trên WebView Android CEF */
+}
+
+.ammo-cluster { flex-grow: 1; text-align: right; }
+
+.ammo-big {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 36px; font-weight: 800;
+    color: #fff; line-height: 0.9;
+    /* [OPT] Không text-shadow */
+}
+
+.ammo-small {
+    font-size: 12px;
+    color: #95a5a6;
+    font-weight: 600;
+}
+
+.mag-bar { display: flex; gap: 2px; justify-content: flex-end; margin-top: 4px; }
+
+.mag-pip {
+    width: 4px; height: 6px;
+    background: #ff4757;
+    opacity: 0.3;
+    transform: skewX(-20deg);
+    /* [OPT] KHÔNG transition trên từng pip — nếu có 30 pip = 30 transition
+       đồng thời → tắt hết, JS set opacity trực tiếp nhanh hơn */
+}
+
+/* [OPT] Dùng opacity thay vì box-shadow để active pip nổi bật,
+   browser composite opacity không cần repaint */
+.mag-pip.active {
+    opacity: 1;
+    /* box-shadow: 0 0 5px #ff4757; ← BỎ: mỗi pip active = 1 shadow layer */
+}

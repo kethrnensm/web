@@ -1,0 +1,101 @@
+/* Nền tối mờ nhẹ, không dùng Blur để giảm lag tối đa */
+.radial-menu-container {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.4); 
+    opacity: 0;
+    transition: opacity 0.1s ease-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    visibility: hidden;
+    pointer-events: auto;
+    
+    /* Font riêng cho Radial */
+    font-family: 'Rajdhani', sans-serif;
+    
+    /* ✅ THÊM: Z-index cao để đảm bảo luôn hiển thị trên cùng */
+    z-index: 10000;
+
+    /* [OPT] Thêm will-change vì opacity transition khi show/hide */
+    will-change: opacity;
+}
+
+.radial-menu-container.active {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+}
+
+/* Tìm class này trong radial.css và sửa lại */
+.radial-menu {
+    position: relative;
+
+    /* Dùng vmin để tự co giãn đều trên mọi màn hình, luôn vuông */
+    width: min(280px, 75vmin);
+    height: min(280px, 75vmin);
+    aspect-ratio: 1 / 1; /* Backup đảm bảo luôn vuông dù width/height lệch */
+
+    /* Bỏ max-width/max-height riêng lẻ, min() đã gộp lại rồi */
+
+    transform: scale(0.9) translateZ(0);
+    transform-origin: center center;
+    transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* [OPT] Chuyển will-change xuống .active — tránh tạo GPU layer khi menu đang đóng */
+}
+
+.radial-menu-container.active .radial-menu {
+    transform: scale(1) translateZ(0);
+    /* [OPT] will-change chỉ bật khi menu đang mở/đóng thật sự */
+    will-change: transform;
+}
+
+svg { width: 100%; height: 100%; filter: none; }
+
+/* Lát cắt */
+.slice-group { cursor: pointer; }
+.slice-path {
+    fill: rgba(30, 30, 35, 0.95);
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 1px;
+    transition: fill 0.1s ease;
+}
+
+/* Hover Effect */
+.slice-group:hover .slice-path { fill: #00e5ff; } /* Màu xanh Cyan sáng */
+.slice-group:hover .menu-icon { fill: #000000; }
+.slice-group:hover .label-text { fill: #000000; font-weight: 800; }
+.slice-group:active .slice-path { fill: #00b2cc; }
+
+/* Icon & Text */
+.content-group { pointer-events: none; }
+.menu-icon { fill: #00e5ff; transition: fill 0.1s ease; }
+.label-text {
+    fill: #ffffff;
+    font-size: 12px; /* Chữ nhỏ lại xíu cho vừa 9 slot */
+    font-weight: 700;
+    text-anchor: middle;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: fill 0.1s ease;
+}
+
+/* Center Button */
+.center-circle {
+    cursor: pointer;
+    transition: transform 0.1s;
+    transform-origin: center;
+    /* [OPT] Thêm translateZ(0) để hover scale chạy trên GPU */
+    transform: translateZ(0);
+}
+.center-bg {
+    fill: rgba(40, 40, 45, 1);
+    stroke: #00e5ff; stroke-width: 2px;
+    transition: all 0.1s ease;
+}
+.exit-text {
+    fill: #fff; font-size: 14px; font-weight: 700;
+    text-anchor: middle; dominant-baseline: central; pointer-events: none;
+}
+.center-circle:hover { transform: scale(1.1) translateZ(0); }
+.center-circle:hover .center-bg { fill: #ff3f34; stroke: #ff3f34; }

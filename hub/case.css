@@ -1,0 +1,393 @@
+/* ========== CASE OPENING MODULE — MOBILE OPTIMIZED ========== */
+
+:root {
+    --hud-scale: 0.50;
+    --bg-color: #1e1e1e;
+    --panel-bg: #2b2b2b;
+    --blue: #4b69ff;
+    --purple: #8847ff;
+    --pink: #d32ce6;
+    --red: #eb4b4b;
+    --gold: #ffd700;
+    --gray: #b0c3d9;
+}
+
+/* ─── CONTAINER ─────────────────────────────────────────────── */
+/*
+ * THAY ĐỔI HIỆU NĂNG:
+ *   - box-shadow đơn giản (1 lớp thay vì spread lớn)
+ *   - gradient giữ nhưng bỏ lớp nặng
+ *   - contain: layout style → giới hạn vùng repaint
+ *   - width thu lại 560px (đủ cho màn 720p/1080p mobile)
+ */
+.csgo-container {
+    width: 560px;
+    background: #252525;
+    border-top: 3px solid #ffd700;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+    position: absolute;
+    display: none;
+    flex-direction: column;
+    opacity: 0;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(calc(var(--hud-scale) * 0.9));
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    cursor: move;
+    pointer-events: auto;
+    z-index: 5000;
+    font-family: 'Rajdhani', sans-serif;
+    color: white;
+    contain: layout style;                  /* giới hạn repaint ra ngoài container */
+}
+
+.csgo-container.active {
+    display: flex;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(var(--hud-scale));
+}
+
+.csgo-container.dragging {
+    transform: none !important;
+    cursor: move;
+}
+
+/* ─── TOP BAR ────────────────────────────────────────────────── */
+.top-bar {
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.25);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    cursor: move;
+}
+
+.case-name {
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #ddd;
+}
+
+.key-count {
+    font-size: 15px;
+    color: #ffd700;
+    font-weight: 600;
+}
+
+/* ─── ROLLER ─────────────────────────────────────────────────── */
+/*
+ * THAY ĐỔI HIỆU NĂNG:
+ *   - height giảm 220 → 160px
+ *   - inset box-shadow nhẹ hơn (bỏ spread lớn)
+ *   - translateZ(0) tạo composite layer riêng trên GPU
+ */
+.roller-viewport {
+    position: relative;
+    width: 100%;
+    height: 160px;
+    background: #151515;
+    overflow: hidden;
+    border-top: 1px solid #2a2a2a;
+    border-bottom: 1px solid #2a2a2a;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    transform: translateZ(0);              /* promote viewport lên GPU layer */
+}
+
+.selector-line {
+    position: absolute;
+    left: 50%;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: #ffd700;
+    z-index: 10;
+    transform: translateX(-50%);
+    box-shadow: 0 0 6px #ffd700;          /* shadow nhẹ hơn, đủ thấy */
+}
+
+.selector-line::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #ffd700;
+}
+
+/*
+ * THAY ĐỔI HIỆU NĂNG:
+ *   - will-change KHÔNG đặt ở đây. JS tự thêm/xóa khi bắt đầu/kết thúc spin.
+ *     Để thường trực sẽ giữ layer trên VRAM liên tục → waste RAM.
+ *     Gợi ý JS:
+ *       track.style.willChange = 'transform';   // trước khi animate
+ *       track.style.willChange = 'auto';         // sau khi animate xong
+ */
+.items-track {
+    display: flex;
+    height: 100%;
+    transform: translateX(0px);
+}
+
+/* ─── ITEM CARDS ─────────────────────────────────────────────── */
+/*
+ * THAY ĐỔI HIỆU NĂNG:
+ *   - width 180 → 130px (ít card hơn cần render)
+ *   - bỏ background gradient → solid rgba đơn giản
+ *   - card-img bỏ filter:drop-shadow (rất đắt trên mobile GPU)
+ */
+.item-card {
+    width: 130px;
+    height: 100%;
+    flex-shrink: 0;
+    border-right: 1px solid rgba(255,255,255,0.04);
+    background: rgba(255,255,255,0.03);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.item-card.common    { border-bottom: 5px solid var(--gray); }
+.item-card.uncommon  { border-bottom: 5px solid #5e98d9; }
+.item-card.rare      { border-bottom: 5px solid var(--blue); }
+.item-card.epic      { border-bottom: 5px solid var(--purple); }
+.item-card.legendary { border-bottom: 5px solid var(--pink); }
+.item-card.mythical  { border-bottom: 5px solid var(--red); }
+.item-card.special   { border-bottom: 5px solid var(--gold); }
+
+.card-img {
+    width: 80px;
+    height: 56px;
+    object-fit: contain;
+    margin-bottom: 10px;
+    /* filter:drop-shadow ĐÃ XÓA — đây là 1 trong những tác nhân drop FPS lớn nhất */
+}
+
+.card-name {
+    font-size: 11px;
+    color: #aaa;
+    text-align: center;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 0 6px;
+}
+
+/* ─── CONTROLS ───────────────────────────────────────────────── */
+.controls {
+    padding: 16px 20px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    background: #1e1e1e;
+}
+
+.btn {
+    padding: 10px 28px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+    transition: background 0.15s, transform 0.1s;  /* chỉ transition prop cần thiết */
+}
+
+.btn-open              { background: #4caf50; color: #000; }
+.btn-open:hover        { background: #45a049; transform: scale(1.04); }
+.btn-open:disabled     { background: #2e2e2e; color: #555; cursor: not-allowed; transform: none; }
+
+.btn-close             { background: #e74c3c; color: #fff; }
+.btn-close:hover       { background: #c0392b; transform: scale(1.04); }
+
+.btn-history           { background: #2e86c1; color: #fff; }
+.btn-history:hover     { background: #1a6fa3; transform: scale(1.04); }
+
+/* ─── RESULT OVERLAY ─────────────────────────────────────────── */
+/*
+ * THAY ĐỔI HIỆU NĂNG:
+ *   - XÓA backdrop-filter: blur(10px) → đây là tác nhân NGỐN GPU số 1
+ *     Thay bằng background đục hơn để vẫn tạo cảm giác "blur"
+ *   - animation fadeIn giữ nguyên (nhẹ, chỉ opacity)
+ */
+.result-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.88);          /* đục hơn để bù cho việc bỏ blur */
+    z-index: 20;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* backdrop-filter: blur(10px) ĐÃ XÓA */
+}
+
+.result-overlay.show {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+}
+
+.winner-card {
+    width: 260px;
+    padding: 18px;
+    background: #242424;
+    border: 2px solid;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6);    /* shadow nhẹ hơn */
+    transform: scale(0.8);
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    contain: layout style;
+}
+
+.winner-img {
+    width: 160px;
+    height: 120px;
+    object-fit: contain;
+    margin: 14px 0;
+    /* filter:drop-shadow ĐÃ XÓA */
+}
+
+.winner-title {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    /* text-shadow bỏ để đỡ repaint */
+}
+
+.winner-rarity {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 22px;
+    font-weight: 700;
+}
+
+.btn-continue {
+    background: #ffd700;
+    color: #000;
+    padding: 10px 32px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.btn-continue:hover { background: #ffe340; }
+
+/* ─── HISTORY PANEL ──────────────────────────────────────────── */
+/*
+ * THAY ĐỔI:
+ *   - width 800 → 520px
+ *   - max-height giữ 80vh
+ *   - box-shadow đơn giản hơn
+ *   - contain: layout style
+ */
+.history-container {
+    width: 520px;
+    background: #252525;
+    border-top: 3px solid #2e86c1;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+    position: absolute;
+    display: none;
+    flex-direction: column;
+    opacity: 0;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(calc(var(--hud-scale) * 0.9));
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    max-height: 80vh;
+    pointer-events: auto;
+    z-index: 5001;
+    font-family: 'Rajdhani', sans-serif;
+    color: white;
+    contain: layout style;
+}
+
+.history-container.active {
+    display: flex;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(var(--hud-scale));
+}
+
+.history-header {
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.2);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.history-title {
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #3498db;
+}
+
+.history-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px;
+    -webkit-overflow-scrolling: touch;      /* smooth scroll iOS/Android */
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.history-table th {
+    background: rgba(46,134,193,0.18);
+    padding: 10px;
+    text-align: left;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: #3498db;
+}
+
+.history-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: #aaa;
+    font-size: 13px;
+}
+
+.history-table tr:hover { background: rgba(255,255,255,0.02); }
+
+.player-name { color: #ffd700; font-weight: 600; }
+.reward      { color: #4caf50; font-weight: 600; }
+.amount      { color: #fff; font-size: 12px; }
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #555;
+}
+.empty-state-icon { font-size: 48px; margin-bottom: 14px; }
+.empty-state-text { font-size: 15px; font-weight: 600; }
+
+/* ─── ANIMATIONS ─────────────────────────────────────────────── */
+/*
+ * THAY ĐỔI: chỉ dùng opacity + transform — 2 prop được GPU composite,
+ * không trigger layout/paint. Đã bỏ tất cả animation dùng các prop khác.
+ */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes popIn {
+    0%   { transform: scale(0.75); opacity: 0; }
+    60%  { transform: scale(1.04); opacity: 1; }
+    100% { transform: scale(1);    opacity: 1; }
+}

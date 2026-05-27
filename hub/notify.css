@@ -1,0 +1,131 @@
+/* Container chứa thông báo (Góc phải, bên dưới HUD một chút) */
+#notify-container {
+    position: fixed;
+    
+    /* 1. Kéo lên góc trên, cộng thêm 120px để nó nằm ngay dưới bảng HUD Info */
+    top: calc(var(--safe-top) + 80px); 
+    
+    /* 2. Căn lề phải đồng bộ với HUD */
+    right: var(--safe-right); 
+    
+    width: 320px; /* Giữ nguyên độ rộng gốc, scale sẽ tự lo việc thu nhỏ */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 20;
+    pointer-events: none;
+    /* [OPT] Bỏ will-change: transform — container không animate, giữ sẽ tốn 1 GPU layer trắng */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+    /* 3. MAGIC Ở ĐÂY: Thu nhỏ đồng bộ với biến --hud-scale bên hud_mobile.css */
+    transform: scale(var(--hud-scale));
+    
+    /* 4. Neo tâm thu phóng ở góc trên bên phải để nó bám sát lề màn hình */
+    transform-origin: top right; 
+}
+
+/* Style chung cho thẻ thông báo */
+.notify-card {
+    background: rgba(20, 20, 25, 0.85);
+    border-left: 4px solid #fff;
+    border-radius: 4px;
+    padding: 12px 15px;
+    color: #fff;
+    /* box-shadow: 0 5px 15px rgba(0,0,0,0.3); */
+    position: relative;
+    overflow: hidden;
+
+    transform: translateX(120%) translateZ(0);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s;
+    opacity: 0;
+
+    pointer-events: none;
+    /* [OPT] Bỏ will-change khỏi trạng thái mặc định — mỗi thẻ notify đang ẩn mà giữ
+       will-change sẽ tạo 1 GPU composite layer riêng → nhiều thẻ = nhân RAM lên.
+       Chỉ bật will-change khi thẻ đang show/hide thật sự. */
+}
+
+.notify-card.show {
+    transform: translateX(0) translateZ(0);
+    opacity: 1;
+    /* [OPT] will-change chỉ bật đúng lúc đang animate, tự giải phóng sau khi xong */
+    will-change: transform, opacity;
+}
+
+.notify-card.hide {
+    transform: translateX(120%) translateZ(0);
+    opacity: 0;
+    will-change: transform, opacity;
+}
+
+/* Header thông báo */
+.notify-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.notify-icon {
+    font-size: 16px;
+}
+
+.notify-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Nội dung text */
+.notify-message {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.4;
+    font-weight: 500;
+}
+
+/* Thanh thời gian chạy */
+.progress-bar {
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 2px;
+    width: 100%;
+    background: rgba(255,255,255,0.2);
+}
+
+.progress-fill {
+    height: 100%;
+    width: 100%;
+    transform-origin: left;
+    /* [OPT] Thêm translateZ(0) để animation scaleX chạy trên GPU */
+    transform: translateZ(0);
+    animation: notifyProgress linear forwards;
+}
+
+@keyframes notifyProgress {
+    to { transform: scaleX(0) translateZ(0); }
+}
+
+/* --- THEME MÀU SẮC --- */
+
+/* SUCCESS (Type 0) */
+.type-0 { border-left-color: #2ecc71; }
+.type-0 .notify-icon { color: #2ecc71; }
+.type-0 .progress-fill { background: #2ecc71; }
+
+/* ERROR (Type 1) */
+.type-1 { border-left-color: #ff4757; }
+.type-1 .notify-icon { color: #ff4757; }
+.type-1 .progress-fill { background: #ff4757; }
+
+/* INFO (Type 2) */
+.type-2 { border-left-color: #00d2ff; }
+.type-2 .notify-icon { color: #00d2ff; }
+.type-2 .progress-fill { background: #00d2ff; }
+
+/* WARNING (Type 3) */
+.type-3 { border-left-color: #ffa502; }
+.type-3 .notify-icon { color: #ffa502; }
+.type-3 .progress-fill { background: #ffa502; }

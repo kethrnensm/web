@@ -1,0 +1,137 @@
+/* ============================================================
+   MODULE: ANNOUNCEMENT (BOTTOM CENTER - MOBILE OPTIMIZED)
+   ============================================================ */
+:root {
+    --ann-pink: #ff0055;
+    --ann-cyan: #00d2ff;
+}
+
+#announcement-container {
+    position: fixed;
+    /* Dời xuống lề dưới */
+    bottom: calc(var(--safe-bottom) + 30px);
+    top: auto; 
+    left: 50%;
+    
+    /* Ép căn giữa tuyệt đối và thu nhỏ theo HUD */
+    transform: translateX(-50%) scale(var(--hud-scale));
+    
+    width: 600px; /* Thu hẹp lại một chút so với bản PC cho gọn */
+    display: none;
+    z-index: 9999; 
+    padding: 3px; 
+    border-radius: 8px;
+    overflow: hidden;
+    pointer-events: none; 
+    transform-origin: bottom center;
+    /* [OPT] Bỏ will-change ở đây — container đang display:none, giữ sẽ tốn GPU layer trắng.
+       Sẽ bật đúng lúc qua .ann-show / .ann-hide bên dưới. */
+}
+
+/* PHỤC HỒI HIỆU ỨNG VIỀN MÀU CHẠY VÒNG QUANH */
+#announcement-container::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: conic-gradient(transparent, var(--ann-pink), var(--ann-cyan), var(--ann-pink), transparent);
+    animation: rotate 4s linear infinite;
+    z-index: -2;
+    /* [OPT] QUAN TRỌNG — conic-gradient rotate liên tục là nặng nhất file này.
+       will-change: transform báo GPU tạo composite layer riêng, tránh repaint
+       main thread mỗi frame → cứu FPS đáng kể trên CEF mobile. */
+    will-change: transform;
+}
+
+.ann-inner {
+    background: rgba(10, 10, 15, 0.95);
+    border-radius: 6px;
+    width: 100%; height: 100%;
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column;
+    font-family: 'Montserrat', sans-serif;
+    /* Phục hồi bóng đổ cực nhẹ để không bị lag FPS */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.6); 
+}
+
+.ann-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 16px; background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ann-badge {
+    background: var(--ann-pink); color: white;
+    font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 12px;
+    padding: 4px 8px; border-radius: 4px; letter-spacing: 1px;
+    box-shadow: 0 0 8px rgba(255, 0, 85, 0.6);
+    display: flex; align-items: center; gap: 6px;
+}
+
+.ann-pulse {
+    width: 8px; height: 8px; background: white; border-radius: 50%;
+    animation: blink 1s infinite;
+    /* [OPT] Animation opacity + scale liên tục → cần GPU layer riêng */
+    will-change: opacity, transform;
+}
+.ann-server-label { color: rgba(255, 255, 255, 0.5); font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; }
+
+/* PHỤC HỒI NỀN CARO LƯỚI */
+.ann-body { 
+    padding: 20px 24px; overflow: hidden; position: relative;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.ann-scroll { 
+    white-space: nowrap; overflow: hidden; 
+    mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); 
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent); 
+}
+
+#announcement-text {
+    display: inline-block; color: #ffffff; font-size: 20px; font-weight: 600;
+    text-transform: uppercase; 
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    padding-left: 100%;
+    /* [OPT] Giữ will-change — marquee chạy liên tục, hợp lệ để tạo GPU layer */
+    will-change: transform;
+}
+
+/* THANH CHẠY PROGRESS BAR GRADIENT */
+.ann-progress-line { height: 2px; width: 100%; background: #1a1a1a; position: relative; }
+.ann-progress-fill { height: 100%; background: linear-gradient(90deg, var(--ann-pink), var(--ann-cyan)); width: 100%; transform-origin: left; }
+
+/* ============================================================
+   ANIMATIONS 
+   ============================================================ */
+/* [OPT] Thêm translateZ(0) vào keyframes đảm bảo GPU path trên CEF cũ */
+@keyframes rotate { 100% { transform: rotate(360deg) translateZ(0); } }
+@keyframes blink {
+    0%, 100% { opacity: 1; transform: scale(1) translateZ(0); }
+    50%       { opacity: 0.5; transform: scale(0.8) translateZ(0); }
+}
+@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+@keyframes progress { 0% { transform: scaleX(1); } 100% { transform: scaleX(0); } }
+
+/* Hiệu ứng trượt lên từ dưới lề màn hình */
+@keyframes slideIn { 
+    0%   { transform: translateX(-50%) translateY(150px) scale(var(--hud-scale)); opacity: 0; } 
+    100% { transform: translateX(-50%) translateY(0)     scale(var(--hud-scale)); opacity: 1; } 
+}
+
+@keyframes slideOut { 
+    0%   { transform: translateX(-50%) translateY(0)     scale(var(--hud-scale)); opacity: 1; } 
+    100% { transform: translateX(-50%) translateY(150px) scale(var(--hud-scale)); opacity: 0; } 
+}
+
+/* Giữ class forwards để khung không bị giật nháy khi kết thúc hoạt ảnh */
+/* [OPT] will-change bật đúng lúc animate, browser tự giải phóng layer sau khi xong */
+.ann-show {
+    display: block !important;
+    animation: slideIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    will-change: transform, opacity;
+}
+.ann-hide {
+    animation: slideOut 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    will-change: transform, opacity;
+}
