@@ -1,27 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CEF Example Web</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SA-RP Holo Inventory</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Rajdhani:wght@500;600;700&family=Chakra+Petch:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="inventory.css">
+    
+    <style>
+        /* Nền trong suốt để hiển thị game phía sau */
+        body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
+    </style>
 </head>
 <body>
-    <div id="alert-overlay" class="hidden">
-        <div class="alert-box">
-            <div class="alert-content">
-                <div class="alert-icon">
-                    <span>?</span>
+    <!-- INVENTORY -->
+
+    <div id="inv-wrapper" style="display: none; position: fixed; inset: 0; z-index: 9995; pointer-events: none; align-items: center; justify-content: space-between; padding: 0 8vw;">
+        
+        <div class="holo-side-tabs">
+            <button class="holo-side-tab active" id="tab-items" onclick="switchInvTab('items')" data-tooltip="TÚI ĐỒ">
+                <i class="fa-solid fa-box"></i>
+            </button>
+            <button class="holo-side-tab" id="tab-skins" onclick="switchInvTab('skins')" data-tooltip="TRANG PHỤC">
+                <i class="fa-solid fa-shirt"></i>
+            </button>
+        </div>
+        <div class="holo-inv-panel left-panel" style="pointer-events: auto;">
+            <div class="holo-noise"></div>
+            
+            <button class="inv-close-x" onclick="closeInventory()">✕</button>
+            
+            <div class="holo-header">
+                <div>
+                    <h1 class="holo-title"><i class="fa-solid fa-backpack" style="color: #00c3ff;"></i> TÚI ĐỒ CÁ NHÂN</h1>
+                    <p class="holo-subtitle">TACTICAL EQUIPMENT</p>
                 </div>
-                <div class="alert-title" id="alert-title">Confirm Title</div>
-                <div class="alert-message" id="alert-message">Confirm Message</div>
-                <div class="alert-buttons">
-                    <button id="okay-button" class="okay-button">Okay</button>
-                    <button id="cancel-button" class="cancel-button">Cancel</button>
+                <div class="holo-weight-box">
+                    <div class="holo-weight-text" id="inv-weight-val">0.0 / 50.0 KG</div>
+                    <div class="holo-weight-bar"><div class="holo-weight-fill" id="inv-weight-fill" style="width: 0%;"></div></div>
                 </div>
             </div>
+
+            <div class="holo-grid" id="inv-item-grid"></div>
+            
+            <div class="holo-grid" id="inv-skin-grid" style="display: none;"></div>
+            
+            <div class="holo-glow-bottom"></div>
         </div>
+
+        <div class="holo-inv-panel right-panel" id="inv-info-panel" style="pointer-events: auto;">
+            <div class="holo-noise"></div>
+            
+            <div class="holo-info-content">
+                <div class="holo-preview">
+                    <img id="inv-detail-img" src="" alt="">
+                </div>
+                
+                <h2 class="holo-item-name" id="inv-detail-name">TÊN VẬT PHẨM</h2>
+                <div class="holo-item-desc" id="inv-detail-desc">Mô tả chi tiết...</div>
+                
+                <div class="holo-actions">
+                    <button class="holo-btn use" onclick="invAction('use')"><i class="fa-solid fa-bolt"></i> SỬ DỤNG</button>
+                    <button class="holo-btn give" onclick="invAction('trade')"><i class="fa-solid fa-handshake"></i> GIAO DỊCH</button>
+                    <button class="holo-btn drop" onclick="invAction('delete')"><i class="fa-solid fa-trash-can"></i> XOÁ</button>
+                </div>
+            </div>
+            
+            <div class="holo-glow-bottom"></div>
+        </div>
+
     </div>
-    <script src="script.js"></script>
+    <script src="inventory.js"></script>
 </body>
 </html>
