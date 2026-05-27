@@ -1,0 +1,301 @@
+/* ============================================ */
+/* HOLOGRAPHIC TACTICAL INVENTORY CSS           */
+/* [OPTIMIZED FOR CEF / SA-MP MOBILE]           */
+/* ============================================ */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Rajdhani:wght@500;600;700&family=Chakra+Petch:wght@500;700&family=Inter:wght@400;600&display=swap');
+
+:root {
+    --tech-cyan: #00f0ff;
+    --tech-cyan-dim: rgba(0, 240, 255, 0.2);
+    --tech-bg: rgba(6, 10, 20, 0.85);
+    --tech-bg-light: rgba(16, 24, 40, 0.9);
+    --rarity-common: #94a3b8;
+    --rarity-rare: #3b82f6;
+    --rarity-epic: #d946ef;
+    --rarity-legendary: #f59e0b;
+}
+
+#inv-wrapper {
+    font-family: 'Inter', sans-serif;
+}
+
+/* ================= MENU ICON INVENTORY ================= */
+.holo-side-tabs {
+    position: absolute;
+    left: 20px; 
+    top: 50%; 
+    transform: translateY(-50%);
+    transform-origin: left center;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 100;
+    pointer-events: auto; 
+}
+
+.holo-side-tab {
+    width: 60px;
+    height: 60px;
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(0, 195, 255, 0.3);
+    color: #8ab4f8;
+    font-size: 24px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.holo-side-tab:hover {
+    background: rgba(0, 195, 255, 0.15);
+    color: #fff;
+    border-color: #00c3ff;
+}
+
+.holo-side-tab.active {
+    background: rgba(0, 195, 255, 0.25);
+    border-color: #00c3ff;
+    color: #fff;
+}
+
+/* Hiệu ứng Tooltip */
+.holo-side-tab::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 100%;
+    margin-left: 10px;
+    background: rgba(16, 24, 40, 0.95);
+    border: 1px solid #00c3ff;
+    color: #00c3ff;
+    padding: 8px 15px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    white-space: nowrap;
+    border-radius: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease-out, margin-left 0.2s ease-out;
+    z-index: 100;
+}
+
+.holo-side-tab:hover::after {
+    opacity: 1;
+    margin-left: 15px;
+}
+
+/* ── PANEL CHÍNH ──────────────────────────── */
+.holo-inv-panel {
+    position: relative;
+    background: linear-gradient(135deg, rgba(6,10,20,0.97) 0%, rgba(2,4,10,0.99) 100%);
+    border: 1px solid rgba(0,240,255,0.15);
+    border-top: 1px solid rgba(0,240,255,0.4);
+    border-radius: 4px;
+    padding: 30px;
+    color: #fff;
+    contain: layout style paint;
+}
+
+.left-panel {
+    width: 560px; height: 720px;
+    transform: perspective(1500px) rotateY(12deg);
+    transform-origin: left center;
+}
+.right-panel {
+    width: 380px; height: 680px;
+    transform: perspective(1500px) rotateY(-12deg);
+    transform-origin: right center;
+    visibility: hidden; opacity: 0;
+    transition: opacity 0.25s ease, visibility 0.25s;
+}
+.right-panel.show { visibility: visible; opacity: 1; }
+
+.holo-noise {
+    position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.07) 0px, transparent 2px);
+    z-index: 0; opacity: 0.35;
+    contain: strict;
+}
+
+.holo-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 25px; position: relative; z-index: 2;
+    border-bottom: 1px solid rgba(0,240,255,0.12);
+    padding-bottom: 15px;
+}
+.holo-header::after {
+    content: ''; position: absolute; bottom: -1px; left: 0;
+    width: 30%; height: 1px; background: var(--tech-cyan);
+}
+
+.holo-title { font-family: 'Chakra Petch', sans-serif; font-size: 32px; margin: 0; letter-spacing: 2px; color: #fff; }
+.holo-subtitle { font-family: 'Rajdhani', sans-serif; font-size: 14px; color: var(--tech-cyan); letter-spacing: 4px; font-weight: 700; opacity: 0.8; }
+
+.holo-weight-box { text-align: right; width: 180px; }
+.holo-weight-text { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px; letter-spacing: 1px; }
+.holo-weight-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.1); overflow: hidden; border-radius: 2px; }
+.holo-weight-fill { height: 100%; background: var(--tech-cyan); transition: width 0.3s ease; }
+
+.holo-grid {
+    position: relative; z-index: 2;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+    max-height: 540px; overflow-y: auto;
+    padding-right: 10px; padding-bottom: 20px;
+    contain: content;
+    -webkit-overflow-scrolling: touch; 
+}
+.holo-grid::-webkit-scrollbar { width: 4px; }
+.holo-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.4); }
+.holo-grid::-webkit-scrollbar-thumb { background: var(--tech-cyan); border-radius: 4px;}
+
+.holo-slot {
+    aspect-ratio: 1/1;
+    background: var(--tech-bg-light);
+    border: 1px solid rgba(255,255,255,0.05); border-radius: 3px;
+    position: relative; cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    display: flex; align-items: center; justify-content: center;
+    contain: layout style;
+}
+
+.holo-slot.rarity-common    { border-bottom: 2px solid var(--rarity-common); }
+.holo-slot.rarity-rare      { border-bottom: 2px solid var(--rarity-rare); }
+.holo-slot.rarity-epic      { border-bottom: 2px solid var(--rarity-epic); }
+.holo-slot.rarity-legendary { border-bottom: 2px solid var(--rarity-legendary); }
+
+.holo-slot:hover { background: rgba(25,35,55,0.95); border-color: rgba(255,255,255,0.2); }
+.holo-slot.active { background: rgba(0,240,255,0.08); border: 1px solid var(--tech-cyan); }
+
+.holo-slot img { max-width: 50%; max-height: 50%; object-fit: contain; z-index: 1; margin-bottom: 14px; }
+
+.holo-slot-amt {
+    position: absolute; top: 4px; right: 4px;
+    font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; color: var(--tech-cyan);
+}
+.holo-slot-name {
+    position: absolute; bottom: 0; left: 0; width: 100%;
+    font-family: 'Rajdhani', sans-serif; font-size: 11px; font-weight: 600;
+    text-align: center; color: #cbd5e1;
+    background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, transparent 100%);
+    padding: 15px 4px 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.5px;
+}
+
+.holo-info-content { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100%; }
+
+.holo-preview {
+    width: 100%; height: 200px; display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.03); margin-bottom: 20px;
+    border: 1px solid rgba(255,255,255,0.05); border-radius: 3px; contain: layout style paint;
+}
+.holo-preview img { max-width: 65%; max-height: 65%; object-fit: contain; z-index: 2; transition: opacity 0.2s ease; }
+
+.holo-item-name { font-family: 'Chakra Petch', sans-serif; font-size: 32px; color: #fff; margin-bottom: 2px; text-transform: uppercase; line-height: 1.1; }
+.holo-item-rarity { font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; }
+.holo-item-desc {
+    font-size: 14px; color: #94a3b8; line-height: 1.6; margin-bottom: 25px; height: 90px; overflow-y: auto;
+    border-left: 2px solid rgba(255,255,255,0.1); padding-left: 15px; contain: content;
+    -webkit-overflow-scrolling: touch;
+}
+.holo-item-desc::-webkit-scrollbar { width: 3px; }
+.holo-item-desc::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); }
+
+.holo-actions { display: flex; flex-direction: column; gap: 12px; margin-top: 25px; }
+.holo-btn {
+    padding: 16px; border: none; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 15px;
+    cursor: pointer; transition: opacity 0.15s, background 0.15s; display: flex; align-items: center; justify-content: center; gap: 10px; letter-spacing: 2px; border-radius: 3px; text-transform: uppercase;
+}
+.holo-btn:active { opacity: 0.8; }
+.holo-btn.use { background: var(--tech-cyan); color: #000; }
+.holo-btn.use:hover { background: #4df7ff; }
+.holo-btn.give { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+.holo-btn.give:hover { background: rgba(255,255,255,0.1); }
+.holo-btn.drop { background: rgba(220,38,38,0.12); color: #ef4444; border: 1px solid rgba(220,38,38,0.2); }
+.holo-btn.drop:hover { background: rgba(220,38,38,0.28); }
+
+.text-common    { color: var(--rarity-common); }
+.text-rare      { color: var(--rarity-rare); }
+.text-epic      { color: var(--rarity-epic); }
+.text-legendary { color: var(--rarity-legendary); }
+
+.inv-close-x {
+    position: absolute; top: 0; right: 0; width: 40px; height: 40px;
+    background: rgba(255,255,255,0.05); border: none; color: rgba(255,255,255,0.5); font-size: 18px;
+    cursor: pointer; z-index: 10; border-radius: 0 4px 0 4px; display: flex; align-items: center; justify-content: center; transition: background 0.15s;
+}
+.inv-close-x:hover { background: rgba(220,38,38,0.8); color: #fff; }
+
+
+/* ========================================================
+   MOBILE RESPONSIVE OVERRIDES (GIỮ NGUYÊN 3D, BÓP GỌN 100%)
+   ======================================================== */
+@media screen and (max-width: 1000px), screen and (max-height: 600px) {
+    
+    #inv-wrapper {
+        padding: 2vh 2vw !important;
+        gap: 0 !important;
+        justify-content: center !important;
+        perspective: 1200px !important; 
+    }
+
+    /* Panel Trái - Giữ nghiêng 3D và scale nhỏ lại */
+    .holo-inv-panel.left-panel {
+        flex: unset !important;
+        width: 58vw !important; 
+        height: 85vh !important; 
+        max-width: none !important;
+        padding: 10px 12px !important;
+        transform: rotateY(10deg) scale(0.8) !important; 
+        transform-origin: right center !important;
+    }
+
+    /* Panel Phải (Bảng Popup thông tin vật phẩm) - Ép nhỏ tối đa để không tràn */
+    .holo-inv-panel.right-panel {
+        flex: unset !important;
+        width: 35vw !important; 
+        height: 80vh !important; 
+        max-width: none !important;
+        padding: 10px 12px !important;
+        transform: rotateY(-10deg) scale(0.72) !important; /* ĐÃ BÓP NHỎ POPUP LẠI RẤT NHIỀU */
+        transform-origin: left center !important;
+    }
+
+    /* Tab Icon bên ngoài nhỏ lại để không đè vào panel */
+    .holo-side-tabs { left: 1vw !important; gap: 6px !important; }
+    .holo-side-tab { width: 35px !important; height: 35px !important; font-size: 14px !important; border-radius: 8px !important; }
+
+    /* Thu nhỏ Tooltip (Các popup chữ hiện ra) */
+    .holo-side-tab::after {
+        padding: 4px 8px !important;
+        font-size: 10px !important;
+        border-radius: 4px !important;
+    }
+
+    /* Nút X đóng nhỏ lại */
+    .inv-close-x { width: 28px !important; height: 28px !important; font-size: 12px !important; }
+
+    /* Lưới item gọn lại, chứa được nhiều đồ hơn */
+    .holo-grid {
+        grid-template-columns: repeat(auto-fill, minmax(clamp(35px, 5vw, 45px), 1fr)) !important;
+        gap: 1vw !important;
+        max-height: 60vh !important; 
+        padding-right: 5px !important;
+    }
+
+    .holo-slot-amt { font-size: clamp(7px, 1vw, 9px) !important; top: 2px !important; right: 4px !important; }
+    .holo-slot-name { font-size: clamp(6px, 0.7vw, 8px) !important; padding: 6px 2px 2px !important; }
+
+    /* Font chữ và nút bấm được bóp lại toàn bộ */
+    .holo-title { font-size: clamp(14px, 2vw, 18px) !important; margin-bottom: 2px !important; }
+    .holo-subtitle { font-size: clamp(8px, 0.9vw, 10px) !important; }
+    .holo-weight-text { font-size: clamp(9px, 1.2vw, 11px) !important; margin-bottom: 4px !important; }
+
+    .holo-item-name { font-size: clamp(12px, 1.8vw, 16px) !important; line-height: 1.1 !important; margin-bottom: 4px !important;}
+    .holo-item-desc { font-size: clamp(9px, 1.1vw, 11px) !important; height: 75px !important; margin-bottom: 8px !important;}
+
+    .holo-btn { padding: 6px !important; font-size: clamp(9px, 1.1vw, 11px) !important; gap: 5px !important; }
+    .holo-preview { height: 95px !important; margin-bottom: 8px !important; }
+    .holo-preview img { max-height: 75px !important; }
+                   }
