@@ -9,10 +9,10 @@
     <link rel="stylesheet" href="npc/npc.css">
     
     <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
-<script>
-    // Khởi tạo vConsole ngay lập tức
-    window.vConsole = new window.VConsole();
-</script>
+    <script>
+        // Khởi tạo vConsole ngay lập tức
+        window.vConsole = new window.VConsole();
+    </script>
 </head>
 <body>
     <div id="alert-overlay" class="hidden">
@@ -30,8 +30,10 @@
             </div>
         </div>
     </div>
+    
     <div id="notify-container"></div>
-        <div id="phone-wrapper">
+
+    <div id="phone-wrapper">
         <div class="iphone-body">
             
             <div class="ph-modal-overlay" id="ph-add-contact-modal">
@@ -206,8 +208,7 @@
                     <i class="fa-solid fa-magnifying-glass"></i>
                     <input type="text" placeholder="Tìm kiếm..." oninput="searchContact(this.value)">
                 </div>
-                <div class="ph-contact-list" id="ph-contact-list">
-                </div>
+                <div class="ph-contact-list" id="ph-contact-list"></div>
             </div>
 
             <div class="ph-screen" id="app-messages">
@@ -219,8 +220,7 @@
                     <i class="fa-solid fa-magnifying-glass"></i>
                     <input type="text" placeholder="Tìm kiếm tin nhắn...">
                 </div>
-                <div class="ph-msg-list" id="ph-msg-list">
-                    </div>
+                <div class="ph-msg-list" id="ph-msg-list"></div>
             </div>
 
             <div class="ph-screen" id="app-chat">
@@ -235,8 +235,7 @@
                     <div class="ph-chat-info-btn" onclick="openChatOptions()"><i class="fa-solid fa-circle-info"></i></div>
                 </div>
                 
-                <div class="ph-chat-body" id="ph-chat-body">
-                    </div>
+                <div class="ph-chat-body" id="ph-chat-body"></div>
 
                 <div class="ph-chat-input-area">
                     <i class="fa-solid fa-camera"></i>
@@ -309,10 +308,10 @@
                 <div class="ph-bank-header">
                     <i class="fa-solid fa-chevron-left" onclick="openApp('bank')" style="font-size: 20px; color: #007aff; cursor: pointer;"></i>
                     <h2>Lịch sử</h2>
-                    <div style="width: 20px;"></div> </div>
+                    <div style="width: 20px;"></div> 
+                </div>
                 
-                <div class="ph-bank-hist-list" id="ph-bank-hist-list">
-                    </div>
+                <div class="ph-bank-hist-list" id="ph-bank-hist-list"></div>
             </div>
 
             <div class="ph-screen" id="app-tacto">
@@ -348,8 +347,7 @@
                 <div class="ph-modal-box" style="width: 90%; height: 75%; display: flex; flex-direction: column; padding: 15px; border-radius: 20px;">
                     <h3 style="margin: 0 0 15px 0;">Chọn một bức ảnh</h3>
                     
-                    <div class="ph-gallery-grid" id="ph-picker-grid" style="flex: 1; overflow-y: auto; margin-bottom: 15px;">
-                        </div>
+                    <div class="ph-gallery-grid" id="ph-picker-grid" style="flex: 1; overflow-y: auto; margin-bottom: 15px;"></div>
                     
                     <button class="ph-btn-cancel" onclick="closeGalleryPicker()" style="width: 100%; padding: 12px; border-radius: 10px;">Hủy bỏ</button>
                 </div>
@@ -367,8 +365,7 @@
                         <i class="fa-solid fa-xmark" onclick="closeComments()" style="font-size: 20px; color: #8e8e93; cursor:pointer;"></i>
                     </div>
                     
-                    <div class="tacto-cmt-list" id="tacto-cmt-list" style="flex: 1; overflow-y: auto; padding: 15px;">
-                        </div>
+                    <div class="tacto-cmt-list" id="tacto-cmt-list" style="flex: 1; overflow-y: auto; padding: 15px;"></div>
                     
                     <div style="padding: 12px 15px 25px 15px; border-top: 1px solid #f2f2f7; display: flex; gap: 10px; background: #f9f9f9;">
                         <input type="text" id="tacto-cmt-input" placeholder="Viết bình luận..." style="flex:1; padding: 12px 15px; border-radius: 25px; border: 1px solid #ddd; outline: none; font-family: 'Inter';">
@@ -404,8 +401,7 @@
                     <i class="fa-solid fa-plus" onclick="openAddPhotoModal()"></i>
                 </div>
                 
-                <div class="ph-gallery-grid" id="ph-gallery-grid">
-                    </div>
+                <div class="ph-gallery-grid" id="ph-gallery-grid"></div>
             </div>
 
             <div id="ph-context-menu" class="ph-context-menu">
@@ -522,10 +518,10 @@
                             <i class="fa-solid fa-chevron-left"></i> Trở lại
                         </div>
                         <h3 id="mkt-detail-title">Chi tiết</h3>
-                        <div style="width: 60px;"></div> </div>
+                        <div style="width: 60px;"></div> 
+                    </div>
                     
-                    <div class="mkt-detail-content" id="mkt-detail-content">
-                        </div>
+                    <div class="mkt-detail-content" id="mkt-detail-content"></div>
                 </div>
                 
             </div>
@@ -536,8 +532,8 @@
 
         </div>
     </div>
-       <div id="cef-app-npc" class="app-wrapper active">
-        
+
+    <div id="cef-app-npc" class="app-wrapper">
         <div class="menu-npc-container">
             
             <div class="menu-header">
@@ -556,43 +552,14 @@
 
             <hr class="divider">
 
-            <div class="menu-options-list">
-                <button class="option-btn" onclick="npcSelect('info')">
-                    <i class="fa-solid fa-book-open icon-info"></i>
-                    <span>Tìm hiểu công việc</span>
-                </button>
-                
-                <button class="option-btn" onclick="npcSelect('apply')">
-                    <i class="fa-solid fa-user-plus icon-apply"></i>
-                    <span>Xin việc</span>
-                </button>
-                
-                <button class="option-btn" onclick="npcSelect('resign')">
-                    <i class="fa-solid fa-user-minus icon-resign"></i>
-                    <span>Nghỉ việc</span>
-                </button>
-                
-                <button class="option-btn" onclick="npcSelect('rent_veh')">
-                    <i class="fa-solid fa-key icon-rent"></i>
-                    <span>Thuê xe giao hàng</span>
-                </button>
-                
-                <button class="option-btn" onclick="npcSelect('return_veh')">
-                    <i class="fa-solid fa-truck icon-return"></i>
-                    <span>Trả xe giao hàng</span>
-                </button>
-                
-                <button class="option-btn" onclick="npcSelect('get_package')">
-                    <i class="fa-solid fa-box-open icon-package"></i>
-                    <span>Lấy hàng hóa</span>
-                </button>
-            </div>
+            <div class="menu-options-list" id="npc-buttons-container">
+                </div>
 
         </div>
-       </div>
-        <script src="npc/npc.js"<>/script
-        <script src="script.js"></script>
+    </div>
+
+    <script src="npc/npc.js"></script>
+    <script src="script.js"></script>
     <script src="hub/phone.js"></script>
-    
 </body>
 </html>
