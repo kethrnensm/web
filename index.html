@@ -1,106 +1,27 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tablet Interface</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background: url('https://wallpaperaccess.com/full/1564883.jpg') no-repeat center center fixed; /* Hình nền */
-            background-size: cover;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .tablet {
-            width: 80vw;
-            height: 70vh;
-            background: rgba(255, 255, 255, 0.1); /* Độ trong suốt */
-            backdrop-filter: blur(20px); /* Hiệu ứng kính mờ */
-            border-radius: 30px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        /* Grid Apps */
-        .app-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .app-item {
-            text-align: center;
-            color: white;
-            cursor: pointer;
-        }
-
-        .icon {
-            width: 60px;
-            height: 60px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-            margin: 0 auto 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-        }
-
-        .locked { filter: grayscale(1); opacity: 0.7; }
-        
-        /* Dock */
-        .dock {
-            display: flex;
-            justify-content: space-around;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 15px;
-            border-radius: 20px;
-            margin-top: auto;
-        }
-
-        .dock-item { text-align: center; color: white; width: 60px; }
-        .dock-icon { width: 50px; height: 50px; border-radius: 12px; margin-bottom: 5px; }
-    </style>
+    <title>CEF Example Web</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-<div class="tablet">
-    <div class="app-grid">
-        <div class="app-item" onclick="alert('Mở Chứng Khoán')"><div class="icon locked">🔒</div><div>Chứng khoán</div></div>
-        <div class="app-item"><div class="icon locked">🔒</div><div>V.I.P</div></div>
-        <div class="app-item"><div class="icon locked">🔒</div><div>Ghi chú</div></div>
-        <div class="app-item"><div class="icon locked">🔒</div><div>Âm nhạc</div></div>
-        <div class="app-item"><div class="icon locked">🔒</div><div>Toét tơ</div></div>
-        <div class="app-item"><div class="icon locked">🔒</div><div>Xổ số</div></div>
-        <div class="app-item"><div class="icon">🌐</div><div>Trình duyệt</div></div>
-        <div class="app-item"><div class="icon">🚕</div><div>Pena Taxi</div></div>
-        <div class="app-item"><div class="icon">🚗</div><div>Phương tiện</div></div>
-        <div class="app-item"><div class="icon">📅</div><div>Sự kiện</div></div>
+    <div id="alert-overlay" class="hidden">
+        <div class="alert-box">
+            <div class="alert-content">
+                <div class="alert-icon">
+                    <span>?</span>
+                </div>
+                <div class="alert-title" id="alert-title">Confirm Title</div>
+                <div class="alert-message" id="alert-message">Confirm Message</div>
+                <div class="alert-buttons">
+                    <button id="okay-button" class="okay-button">Okay</button>
+                    <button id="cancel-button" class="cancel-button">Cancel</button>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="dock">
-        <div class="dock-item"><div class="dock-icon" style="background: green;">💼</div><div>Việc làm</div></div>
-        <div class="dock-item"><div class="dock-icon" style="background: orange;">📍</div><div>Định vị</div></div>
-        <div class="dock-item"><div class="dock-icon" style="background: purple;">👥</div><div>Nhóm hội</div></div>
-        <div class="dock-item"><div class="dock-icon" style="background: grey;">⚙️</div><div>Cài đặt</div></div>
-    </div>
-</div>
-
-<script>
-    // JS của bạn sẽ nằm ở đây
-    console.log("Tablet interface loaded");
-</script>
-
+    <script src="script.js"></script>
 </body>
 </html>
