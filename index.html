@@ -536,43 +536,55 @@
 
         </div>
     </div>
-       <div id="npc-container" class="npc-wrapper">
+       <div id="cef-app-npc" class="app-wrapper active">
         
-        <div class="npc-card">
+        <div class="menu-npc-container">
             
-            <div class="npc-header">
-                <div class="npc-meta">
+            <div class="menu-header">
+                <div class="name-tag-row">
                     <h2 id="npc-name">Tuấn Ngọc</h2>
-                    <span id="npc-tag" class="tag-job"><i class="fa-solid fa-briefcase"></i> #job</span>
+                    <div id="npc-tag" class="job-badge"><i class="fa-solid fa-briefcase"></i> #job</div>
                 </div>
-                <div id="npc-subtext" class="npc-sub">AE:Now Ship</div>
+                <div id="npc-subtext" class="sub-header-text">AE:Now Ship</div>
             </div>
 
-            <div class="npc-dialog">
-                <p id="npc-speech">"Xin chào, tôi là <span class="highlight">Tuấn Ngọc</span>, thuộc bộ phận <span class="highlight">HR</span> của công ty <span class="highlight">AE:Now Ship</span>, bạn cần giúp đỡ gì?"</p>
+            <hr class="divider">
+
+            <div class="dialog-text">
+                <p id="npc-speech">“Xin chào, tôi là <span class="highlight">Tuấn Ngọc</span>, thuộc bộ phận <span class="highlight">HR</span> của công ty <span class="highlight">AE:Now Ship</span>, bạn cần giúp đỡ gì?”</p>
             </div>
 
-            <div class="npc-menu-list">
-                <button class="menu-item" onclick="selectOption('info')">
-                    <i class="fa-solid fa-book-open icon-info"></i> Tìm hiểu công việc
+            <hr class="divider">
+
+            <div class="menu-options-list">
+                <button class="option-btn" onclick="npcSelect('info')">
+                    <i class="fa-solid fa-book-open icon-info"></i>
+                    <span>Tìm hiểu công việc</span>
                 </button>
-                <button class="menu-item" onclick="selectOption('apply')">
-                    <i class="fa-solid fa-user-plus icon-apply"></i> Xin việc
+                
+                <button class="option-btn" onclick="npcSelect('apply')">
+                    <i class="fa-solid fa-user-plus icon-apply"></i>
+                    <span>Xin việc</span>
                 </button>
-                <button class="menu-item" onclick="selectOption('resign')">
-                    <i class="fa-solid fa-user-minus icon-resign"></i> Nghỉ việc
+                
+                <button class="option-btn" onclick="npcSelect('resign')">
+                    <i class="fa-solid fa-user-minus icon-resign"></i>
+                    <span>Nghỉ việc</span>
                 </button>
-                <button class="menu-item" onclick="selectOption('rent_veh')">
-                    <i class="fa-solid fa-key icon-rent"></i> Thuê xe giao hàng
+                
+                <button class="option-btn" onclick="npcSelect('rent_veh')">
+                    <i class="fa-solid fa-key icon-rent"></i>
+                    <span>Thuê xe giao hàng</span>
                 </button>
-                <button class="menu-item" onclick="selectOption('return_veh')">
-                    <i class="fa-solid fa-truck icon-return"></i> Trả xe giao hàng
+                
+                <button class="option-btn" onclick="npcSelect('return_veh')">
+                    <i class="fa-solid fa-truck icon-return"></i>
+                    <span>Trả xe giao hàng</span>
                 </button>
-                <button class="menu-item" onclick="selectOption('get_package')">
-                    <i class="fa-solid fa-box-open icon-package"></i> Lấy hàng hóa
-                </button>
-                <button class="menu-item btn-close" onclick="closeNpcMenu()">
-                    <i class="fa-solid fa-xmark"></i> Đóng giao diện
+                
+                <button class="option-btn" onclick="npcSelect('get_package')">
+                    <i class="fa-solid fa-box-open icon-package"></i>
+                    <span>Lấy hàng hóa</span>
                 </button>
             </div>
 
