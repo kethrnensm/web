@@ -163,7 +163,6 @@ body {
 .notify-progress-fill {
     height: 100%;
     width: 100%;
-    /* Thời gian transition sẽ được set bằng JavaScript */
 }
 
 /* Màu thanh Progress tùy theo loại */
