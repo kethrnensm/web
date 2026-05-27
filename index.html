@@ -1,148 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<link rel="stylesheet" href="css/style.css" media="screen" type="text/css" />
-    <link rel="stylesheet" href="css/skin.css" media="screen" type="text/css" />
-	<link rel="stylesheet" href="css/menu.css" media="screen" type="text/css" />
-
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEF Example Web</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
-<body id="bodyd">
-    <div id = "windowr"  class="login-page"></div>
-    <div class="form">
-
-        <div id="login">
-            <form action="javascript:void(1);" method="get">
-                <img class="logo" src="logoclassic.png" alt="">
-                    <h1>Авторизация</h1>
-                    <div id="error"></div>
-                    <p><span class="material-icons">&#xe7fd;</span><input type="text" id="log-login" placeholder="Логин"></p> <!-- JS because of IE support; better: placeholder="Username" -->
-                    <p><span class="material-icons">&#xe0da;</span></span><input type="text" id="log-password" value="Пароль" onBlur="if(this.value == '') this.value = 'Пароль', this.type = 'text'" onFocus="if(this.value == 'Пароль') this.value = '', this.type = 'password'" required></p> <!-- JS because of IE support; better: placeholder="Password" -->
-
-                    <p><input type="submit" onclick="loginAttempt()" value="Войти"></p>
-            </form>
-        </div>
-        <div id="register">
-
-            <form action="javascript:void(1);" method="get">
-
-                    <img class="logo" src="logoclassic.png" alt="Письма мастера дзен">
-                    <h1>Регистрация</h1>
-                    <div id="error_reg"></div>
-                    <p><span class="material-icons">&#xe7fd;</span><input type="text" id="reg-login" placeholder="Логин"></p> <!-- JS because of IE support; better: placeholder="Username" -->
-                    <p><span class="material-icons">&#xe0be;</span><input type="text"  value="Электронная почта" id="reg-mail" onBlur="if(this.value == '') this.value = 'Электронная почта'" onFocus="if(this.value == 'Электронная почта') this.value = ''" required></p> <!-- JS because of IE support; better: placeholder="Password" -->
-                    <p><span class="material-icons">&#xe0da;</span><input type="text" id="reg-password"  value="Пароль" onBlur="if(this.value == '') this.value = 'Пароль', this.type = 'text'" onFocus="if(this.value == 'Пароль') this.value = '', this.type = 'password'" required></p> <!-- JS because of IE support; better: placeholder="Password" -->
-                    <p><span class="material-icons">&#xe0da;</span><input type="text" id="reg-password-confirm"  value="Повторите пароль" onBlur="if(this.value == '') this.value = 'Повторите пароль', this.type = 'text'" onFocus="if(this.value == 'Повторите пароль') this.value = '', this.type = 'password'" required></p> <!-- JS because of IE support; better: placeholder="Password" -->
-                    <div id="radios">
-                        <label for="male" class="material-icons">
-                            <input type="radio" onclick="clickgender(1)" name="mode" id="male" value="Мужчина"/>
-                            <i>&#xe4eb;</i>
-                        </label>
-                        <label for="female" class="material-icons">
-                            <input type="radio" name="mode" onclick="clickgender(0)" id="female" value="Женщина" />
-                            <i>&#xe13e;</i>
-                        </label>
-                    </div>
-                    <div id="cc-selector">
-                        <input onchange="isCheckedSkinGender(1)" id="male1" type="radio" name="credit-card" value="male1" />
-                        <label class="drinkcard-cc male1" for="male1"></label>
-                        <input onchange="isCheckedSkinGender(2)" id="male2" type="radio" name="credit-card" value="male2" />
-                        <label class="drinkcard-cc male2"for="male2"></label>
-                        <input onchange="isCheckedSkinGender(3)" id="male3" type="radio" name="credit-card" value="male3" />
-                        <label class="drinkcard-cc male3"for="male3"></label>
-                    </div>
-                    <div id="cc-selector-fem" >
-                        <input onchange="isCheckedSkinGender(4)" id="fem1" type="radio" name="credit-card" value="fem1" />
-                        <label class="drinkcard-cc fem1" for="fem1"></label>
-                        <input onchange="isCheckedSkinGender(5)" id="fem2" type="radio" name="credit-card" value="fem2" />
-                        <label class="drinkcard-cc fem2"for="fem2"></label>
-                        <input onchange="isCheckedSkinGender(6)" id="fem3" type="radio" name="credit-card" value="fem3" />
-                        <label class="drinkcard-cc fem3"for="fem3"></label>
-                    </div>
-
-
-                    <p><input type="submit" onclick="registerAttempt()" value="Регистрация"></p>
-
-            </form>
-
-        </div>
-    </div>
-	    <div class="tablet" id="tabletMenu">
-        <div class="notch"></div>
-        <div class="screen">
-            <div class="app-grid">
-                <div class="app" onclick="handleAppClick('Chứng khoán', true)">
-                    <div class="icon bg-dark"><i class="fa-solid fa-lock"></i></div>
-                    <span class="label">Chứng khoán</span>
-                </div>
-                <div class="app" onclick="handleAppClick('V.I.P Citizens', true)">
-                    <div class="icon bg-brown"><i class="fa-solid fa-lock"></i></div>
-                    <span class="label">V.I.P Citizens</span>
-                </div>
-                <div class="app" onclick="handleAppClick('Ghi chú', true)">
-                    <div class="icon bg-olive"><i class="fa-solid fa-lock"></i></div>
-                    <span class="label">Ghi chú</span>
-                </div>
-                <div class="app" onclick="handleAppClick('Âm nhạc', true)">
-                    <div class="icon bg-red"><i class="fa-solid fa-lock"></i></div>
-                    <span class="label">Âm nhạc</span>
-                </div>
-                <div class="app" onclick="handleAppClick('Toét tơ', true)">
-                    <div class="icon bg-teal"><i class="fa-solid fa-lock"></i></div>
-                    <span class="label">Toét tơ</span>
-                </div>
-
-                <div class="app" onclick="handleAppClick('Xổ số', true)">
-                    <div class="icon bg-green-dark"><i class="fa-solid fa-lock"></i></div>
-                    <span class="label">Xổ số</span>
-                </div>
-                <div class="app" onclick="handleAppClick('Trình duyệt', true)">
-                    <div class="icon bg-blue-dark"><i class="fa-solid fa-lock"></i></div>
-                    <span class="label">Trình duyệt</span>
-                </div>
-                <div class="app" onclick="handleAppClick('Pena Taxi', true)">
-                    <div class="icon bg-olive"><i class="fa-solid fa-lock"></i></div>
-                    <span class="label">Pena Taxi</span>
-                </div>
-                <div class="app" onclick="handleAppClick('Phương tiện', true)">
-                    <div class="icon bg-green-dark"><i class="fa-solid fa-lock"></i></div>
-                    <span class="label">Phương tiện</span>
-                </div>
-                <div class="app" onclick="handleAppClick('Sự kiện', true)">
-                    <div class="icon bg-red"><i class="fa-solid fa-lock"></i></div>
-                    <span class="label">Sự kiện</span>
-                </div>
-            </div>
-
-            <div class="dock">
-                <div class="app" onclick="handleAppClick('Việc làm', false)">
-                    <div class="icon dock-green"><i class="fa-solid fa-briefcase"></i></div>
-                    <span class="label">Việc làm</span>
-                </div>
-                <div class="app" onclick="handleAppClick('Định vị', false)">
-                    <div class="icon dock-orange"><i class="fa-solid fa-map-location-dot"></i></div>
-                    <span class="label">Định vị</span>
-                </div>
-                <div class="app" onclick="handleAppClick('Nhóm hội', false)">
-                    <div class="icon dock-purple"><i class="fa-solid fa-users"></i></div>
-                    <span class="label">Nhóm hội</span>
-                </div>
-                <div class="app" onclick="handleAppClick('Cài đặt', false)">
-                    <div class="icon dock-gray"><i class="fa-solid fa-gear"></i></div>
-                    <span class="label">Cài đặt</span>
-                </div>
-            </div>
-            
-            <div class="home-indicator"></div>
-        </div>
-    </div>
-
+<body>
     <div id="alert-overlay" class="hidden">
         <div class="alert-box">
             <div class="alert-content">
                 <div class="alert-icon">
-                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>?</span>
                 </div>
                 <div class="alert-title" id="alert-title">Confirm Title</div>
                 <div class="alert-message" id="alert-message">Confirm Message</div>
@@ -153,11 +22,6 @@
             </div>
         </div>
     </div>
-
     <script src="script.js"></script>
-	<script src="memu.js"></script>
-
-
 </body>
-
-                                                                     </html>
+</html>
