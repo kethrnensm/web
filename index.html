@@ -6,7 +6,8 @@
     <title>CEF Example Web</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="hub/phone.css">
-
+    <link rel="stylesheet" href="npc/npc.css">
+    
     <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
 <script>
     // Khởi tạo vConsole ngay lập tức
@@ -535,6 +536,49 @@
 
         </div>
     </div>
+       <div id="npc-container" class="npc-wrapper">
+        
+        <div class="npc-card">
+            
+            <div class="npc-header">
+                <div class="npc-meta">
+                    <h2 id="npc-name">Tuấn Ngọc</h2>
+                    <span id="npc-tag" class="tag-job"><i class="fa-solid fa-briefcase"></i> #job</span>
+                </div>
+                <div id="npc-subtext" class="npc-sub">AE:Now Ship</div>
+            </div>
+
+            <div class="npc-dialog">
+                <p id="npc-speech">"Xin chào, tôi là <span class="highlight">Tuấn Ngọc</span>, thuộc bộ phận <span class="highlight">HR</span> của công ty <span class="highlight">AE:Now Ship</span>, bạn cần giúp đỡ gì?"</p>
+            </div>
+
+            <div class="npc-menu-list">
+                <button class="menu-item" onclick="selectOption('info')">
+                    <i class="fa-solid fa-book-open icon-info"></i> Tìm hiểu công việc
+                </button>
+                <button class="menu-item" onclick="selectOption('apply')">
+                    <i class="fa-solid fa-user-plus icon-apply"></i> Xin việc
+                </button>
+                <button class="menu-item" onclick="selectOption('resign')">
+                    <i class="fa-solid fa-user-minus icon-resign"></i> Nghỉ việc
+                </button>
+                <button class="menu-item" onclick="selectOption('rent_veh')">
+                    <i class="fa-solid fa-key icon-rent"></i> Thuê xe giao hàng
+                </button>
+                <button class="menu-item" onclick="selectOption('return_veh')">
+                    <i class="fa-solid fa-truck icon-return"></i> Trả xe giao hàng
+                </button>
+                <button class="menu-item" onclick="selectOption('get_package')">
+                    <i class="fa-solid fa-box-open icon-package"></i> Lấy hàng hóa
+                </button>
+                <button class="menu-item btn-close" onclick="closeNpcMenu()">
+                    <i class="fa-solid fa-xmark"></i> Đóng giao diện
+                </button>
+            </div>
+
+        </div>
+       </div>
+        <script src="npc/npc.js"<>/script
         <script src="script.js"></script>
     <script src="hub/phone.js"></script>
     
