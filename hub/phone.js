@@ -1,3 +1,7 @@
+/* ==========================================================
+   SMARTPHONE SYSTEM - SA-RP MOBILE CEF (FULL FIXED)
+   ========================================================== */
+
 let isOutgoingCall = false; 
 let isEndingCall = false;
 let currentInput = "";
@@ -30,15 +34,12 @@ window.showPhone = function(show, timeStr) {
         isPhoneOpen = true;
         if(timeStr && phClock) phClock.innerText = timeStr;
         window.goHome(); 
-        
-        // (Server Pawn sẽ tự gọi CefChangeBrowserFocus(playerid, true) khi gửi sự kiện mở đt)
     } else {
         phWrapper.classList.remove('active');
         isPhoneOpen = false;
         
+        // Gọi lệnh về Pawn để tắt chuột & giải phóng bàn phím di chuyển
         window.sendToGame('client:phone_close');
-        
-        // (Server Pawn sẽ tự gọi CefChangeBrowserFocus(playerid, false) khi nhận lệnh đóng)
     }
 }
 
@@ -61,7 +62,6 @@ window.goHome = function() {
     const screens = document.querySelectorAll('.ph-screen');
     const homeScreen = document.getElementById('app-home');
 
-    // 🔥 FIX LỖI KẸT CAMERA: Luôn luôn ép lột bỏ chế độ toàn màn hình khi về Home
     if(wrapper) {
         wrapper.classList.remove('fullscreen-camera');
     }
@@ -437,24 +437,20 @@ window.showSMSNotify = function(name, text, number) {
     setTimeout(() => { notify.classList.remove('show'); }, 4000);
 }
 
-// ... (Các phần UI khác của SMS, Ngân hàng, Camera, ImgBB, Service, Market được giữ nguyên không đổi để tránh dài dòng code hiển thị UI) ...
-// (Lưu ý: Mọi nơi có gọi window.sendToGame cũ đều đã tự động chuẩn hóa dựa theo hàm sendToGame mới bên dưới)
+// ==========================================
+// 6. HỆ THỐNG GIAO TIẾP VÀ ĐĂNG KÝ SỰ KIỆN CEF CHUẨN (FIXED)
+// ==========================================
 
-/* ==========================================
-   6. HỆ THỐNG GIAO TIẾP VÀ ĐĂNG KÝ SỰ KIỆN CEF CHUẨN
-   ========================================== */
-
-// HÀM GỬI LÊN SERVER: Thay vì dùng hàm lậu, chỉ gọi Cef.sendEvent
+// HÀM GỬI LÊN SERVER PAWN
 window.sendToGame = function(eventName, data = "") {
     if (typeof Cef !== 'undefined' && typeof Cef.sendEvent === 'function') {
         Cef.sendEvent(eventName, String(data));
     } else {
-        // Chỉ dùng để Debug trên Chrome PC khi code UI
         console.log("[TEST WEB] Gửi lệnh CEF:", eventName, "| Data:", data); 
     }
 }
 
-// Hàm hỗ trợ Parse JSON an toàn (Tránh crash nếu Server gửi chuỗi thay vì mảng)
+// Hàm hỗ trợ Parse dữ liệu an toàn tránh crash
 function parseEventData(eventData) {
     try { 
         return JSON.parse(eventData); 
@@ -463,55 +459,67 @@ function parseEventData(eventData) {
     }
 }
 
-// =====================================
-// ĐĂNG KÝ HỨNG SỰ KIỆN (REGISTER CALLBACKS)
-// Cấu trúc Data mảng JSON do Pawn Server trả về: `["arg1", "arg2", ...]`
-// =====================================
+// Đăng ký toàn bộ callback hứng sự kiện từ Game gửi xuống Web
+function InitCefCallbacks() {
+    if (typeof Cef === 'undefined') return;
 
-Cef.registerEventCallback("phone_show", "cb_phone_show");
-window.cb_phone_show = function(eventData) {
-    const args = parseEventData(eventData);
-    window.showPhone(args[0], args[1]);
-};
+    Cef.registerEventCallback("phone_show", "cb_phone_show");
+    window.cb_phone_show = function(eventData) {
+        const args = parseEventData(eventData);
+        window.showPhone(args[0], args[1]);
+    };
 
-Cef.registerEventCallback("phone_incoming_call", "cb_phone_incoming_call");
-window.cb_phone_incoming_call = function(eventData) {
-    const args = parseEventData(eventData);
-    window.showIncomingCall(args[0], args[1]);
-};
+    Cef.registerEventCallback("phone_incoming_call", "cb_phone_incoming_call");
+    window.cb_phone_incoming_call = function(eventData) {
+        const args = parseEventData(eventData);
+        window.showIncomingCall(args[0], args[1]);
+    };
 
-Cef.registerEventCallback("phone_call_started", "cb_phone_call_started");
-window.cb_phone_call_started = function() {
-    window.startCallTimer();
-};
+    Cef.registerEventCallback("phone_call_started", "cb_phone_call_started");
+    window.cb_phone_call_started = function() {
+        window.startCallTimer();
+    };
 
-Cef.registerEventCallback("phone_call_ended", "cb_phone_call_ended");
-window.cb_phone_call_ended = function() {
-    window.endCallUI();
-};
+    Cef.registerEventCallback("phone_call_ended", "cb_phone_call_ended");
+    window.cb_phone_call_ended = function() {
+        window.endCallUI();
+    };
 
-Cef.registerEventCallback("phone_outgoing_call", "cb_phone_outgoing_call");
-window.cb_phone_outgoing_call = function(eventData) {
-    const args = parseEventData(eventData);
-    window.showOutgoingCall(args[0], args[1]);
-};
+    Cef.registerEventCallback("phone_outgoing_call", "cb_phone_outgoing_call");
+    window.cb_phone_outgoing_call = function(eventData) {
+        const args = parseEventData(eventData);
+        window.showOutgoingCall(args[0], args[1]);
+    };
 
-Cef.registerEventCallback("phone_load_contacts", "cb_phone_load_contacts");
-window.cb_phone_load_contacts = function(eventData) {
-    const args = parseEventData(eventData);
-    window.loadContacts(args[0]);
-};
+    Cef.registerEventCallback("phone_load_contacts", "cb_phone_load_contacts");
+    window.cb_phone_load_contacts = function(eventData) {
+        const args = parseEventData(eventData);
+        window.loadContacts(args[0]);
+    };
 
-Cef.registerEventCallback("phone_receive_sms", "cb_phone_receive_sms");
-window.cb_phone_receive_sms = function(eventData) {
-    const args = parseEventData(eventData);
-    window.receiveSMS(args[0], args[1], args[2]);
-};
+    Cef.registerEventCallback("phone_receive_sms", "cb_phone_receive_sms");
+    window.cb_phone_receive_sms = function(eventData) {
+        const args = parseEventData(eventData);
+        window.receiveSMS(args[0], args[1], args[2]);
+    };
 
-Cef.registerEventCallback("phone_update_bank", "cb_phone_update_bank");
-window.cb_phone_update_bank = function(eventData) {
-    const args = parseEventData(eventData);
-    window.updateBankBalance(args[0]);
-};
+    Cef.registerEventCallback("phone_update_bank", "cb_phone_update_bank");
+    window.cb_phone_update_bank = function(eventData) {
+        const args = parseEventData(eventData);
+        if (typeof window.updateBankBalance === 'function') {
+            window.updateBankBalance(args[0]);
+        }
+    };
+}
 
-Cef.registerEventCallback
+// [FIX QUAN TRỌNG] Đợi toàn bộ HTML nạp xong hoàn toàn mới tiến hành đăng ký lắng nghe sự kiện
+document.addEventListener("DOMContentLoaded", function() {
+    if (typeof Cef !== 'undefined') {
+        InitCefCallbacks();
+    } else {
+        // Dự phòng trường hợp thư viện CEF trên Mobile khởi tạo trễ hơn trang web
+        document.addEventListener("OnCefInit", function() {
+            InitCefCallbacks();
+        });
+    }
+});
