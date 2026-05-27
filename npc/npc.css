@@ -1,0 +1,175 @@
+/* Reset CSS cơ bản và thiết lập font giống GTA V / FiveM */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-user-select: none; /* Không cho quét chọn văn bản trên mobile */
+    user-select: none;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    background: transparent; /* Giữ nền trong suốt để thấy nhân vật game */
+    overflow: hidden;
+}
+
+/* Container chính bọc toàn màn hình */
+.npc-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-end; /* Đẩy menu về phía bên phải giống ảnh */
+    align-items: center;
+    padding-right: 4%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* Class kích hoạt hiển thị khi gọi từ Pawn */
+.npc-wrapper.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Khung hộp thoại chính */
+.npc-card {
+    width: 350px;
+    background: rgba(25, 25, 30, 0.85); /* Nền tối mờ kính cường lực cực sang */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 18px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+}
+
+/* Phần tiêu đề thông tin NPC */
+.npc-header {
+    margin-bottom: 15px;
+}
+
+.npc-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.npc-meta h2 {
+    color: #ffb703; /* Màu vàng cam làm nổi bật tên NPC */
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.tag-job {
+    background: #023e8a;
+    color: #fff;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.npc-sub {
+    color: #00b4d8;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+/* Khung chứa đoạn hội thoại */
+.npc-dialog {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 20px;
+    border-left: 3px solid #ffb703;
+}
+
+.npc-dialog p {
+    color: #e0e0e0;
+    font-size: 13.5px;
+    line-height: 1.5;
+}
+
+/* Highlight các từ khóa quan trọng */
+.highlight {
+    color: #ffb703;
+    font-weight: 600;
+}
+
+/* Khu vực danh sách các hàng nút bấm */
+.npc-menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 45vh; /* Giới hạn chiều cao nếu menu có quá nhiều nút sẽ tự sinh thanh cuộn */
+    overflow-y: auto;
+}
+
+/* CSS từng dòng nút lựa chọn */
+.menu-item {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    padding: 12px 15px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Hiệu ứng rê chuột hoặc chạm tay vào nút */
+.menu-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateX(-3px);
+}
+
+.menu-item:active {
+    transform: scale(0.98);
+}
+
+/* Định dạng màu sắc riêng cho từng Icon giống ảnh */
+.menu-item i {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+}
+
+.icon-info { color: #64dfdf; }
+.icon-apply { color: #52b788; }
+.icon-resign { color: #ff4d6d; }
+.icon-rent { color: #fee440; }
+.icon-return { color: #f77f00; }
+.icon-package { color: #c77dff; }
+
+/* Nút Đóng */
+.btn-close {
+    background: rgba(244, 67, 54, 0.15);
+    color: #ff6b6b;
+    justify-content: center;
+    font-weight: 600;
+    margin-top: 5px;
+}
+.btn-close:hover {
+    background: rgba(244, 67, 54, 0.3);
+    color: #fff;
+}
+
+/* Tối ưu hóa thanh cuộn nếu danh sách quá dài */
+.npc-menu-list::-webkit-scrollbar {
+    width: 4px;
+}
+.npc-menu-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
