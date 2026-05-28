@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="hub/phone.css">
     <link rel="stylesheet" href="npc/npc.css">
     <link rel="stylesheet" href="nvc.css">
+    <link rel="stylesheet" href="hunger.css">
     <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
     <script>
         // Khởi tạo vConsole ngay lập tức
@@ -704,29 +705,33 @@
 
     </div>
 </div>
+      <div id="player-hud-stats">
+        <div class="stat-bar-box">
+            <div class="stat-icon icon-hunger">
+                <i class="fa-solid fa-burger"></i>
+            </div>
+            <div class="stat-progress-bg">
+                <div id="bar-hunger" class="stat-progress-fill"></div>
+            </div>
+            <span id="text-hunger" class="stat-value-text">100%</span>
+        </div>
+
+        <div class="stat-bar-box">
+            <div class="stat-icon icon-thirst">
+                <i class="fa-solid fa-bottle-water"></i>
+            </div>
+            <div class="stat-progress-bg">
+                <div id="bar-thirst" class="stat-progress-fill"></div>
+            </div>
+            <span id="text-thirst" class="stat-value-text">100%</span>
+        </div>
+    </div>
+
     <script src="npc/npc.js"></script>
     <script src="script.js"></script>
     <script src="hub/phone.js"></script>
     <script src="nvc.js"></script>
-    <script>
-    // Đăng ký nhận sự kiện tại file tổng (index.html)
-    if (typeof Cef !== 'undefined') {
-        Cef.registerEventCallback("hud_update_stats", function(eventData) {
-            // Tìm đến thẻ object của hunger.html
-            const hudObject = document.getElementById('layer-hud');
-            
-            if (hudObject && hudObject.contentDocument) {
-                // Truy cập vào môi trường Javascript bên trong file hunger.html
-                const hungerWindow = hudObject.contentDocument.defaultView;
-                
-                // Nếu tìm thấy hàm updatePlayerStats bên trong file con, kích hoạt nó ngay!
-                if (hungerWindow && typeof hungerWindow.updatePlayerStats === 'function') {
-                    hungerWindow.updatePlayerStats(eventData);
-                }
-            }
-        });
-    }
-</script>
+    <script src="hunger.js"></script>
 
 </body>
 </html>
