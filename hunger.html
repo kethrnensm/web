@@ -21,13 +21,13 @@
             user-select: none;
         }
 
-        /* KHUNG ĐỊNH VỊ: ĐÃ DỊCH XUỐNG GÓC DƯỚI BÊN TRÁI (NGAY TRÊN CHỖ FPS) */
+        /* KHUNG ĐỊNH VỊ: ĐÃ SỬA ĐỂ MẶC ĐỊNH ẨN HOÀN TOÀN (DISPLAY: NONE) */
         #player-hud-stats {
             position: absolute;
             bottom: 80px;               /* Đẩy lên cách đáy 80px để nằm vừa vặn trên dòng FPS */
             left: 15px;                 /* Căn sát lề lề trái */
             width: 195px;               /* Thu gọn nhẹ độ rộng để giao diện tinh tế hơn */
-            display: flex;
+            display: none;              /* <--- QUAN TRỌNG: Mặc định ẩn, khi có dữ liệu mới hiện bằng JS */
             flex-direction: column;
             gap: 6px;
             z-index: 9999;
@@ -74,7 +74,7 @@
         .stat-progress-fill {
             height: 100%;
             border-radius: 4px;
-            width: 100%; /* Mặc định đầy 100% khi mới vào game */
+            width: 100%; 
             transition: width 0.4s ease-in-out; /* Hiệu ứng tụt/tăng thanh mượt mà */
         }
 
@@ -139,7 +139,13 @@
         // Hàm cập nhật trạng thái Đói & Khát (Được gọi khi có event từ Server)
         function updatePlayerStats(eventData) {
             try {
-                // Phân rã chuỗi JSON nhận được thành mảng dữ liệu mẫu: [hunger, thirst]
+                // Kích hoạt hiển thị khung HUD ngay khi Pawn gọi dữ liệu xuống lần đầu
+                const hudContainer = document.getElementById('player-hud-stats');
+                if (hudContainer && hudContainer.style.display !== 'flex') {
+                    hudContainer.style.display = 'flex';
+                }
+
+                // Phân rã chuỗi JSON nhận được từ Server thành mảng [hunger, thirst]
                 const eventDataJson = JSON.parse(eventData);
                 
                 let hunger = parseInt(eventDataJson[0], 10);
@@ -193,11 +199,8 @@
         if (typeof Cef !== 'undefined') {
             Cef.registerEventCallback("hud_update_stats", "updatePlayerStats");
         } else {
-            // Dòng dữ liệu kiểm thử giả lập khi bật trên Trình duyệt PC
-            console.log("[CEF HUD] Đang chạy trên trình duyệt thường. Test thử dữ liệu...");
-            setTimeout(() => {
-                updatePlayerStats("[90, 15]"); 
-            }, 1000);
+            // Đã xóa phần chạy giả lập tự động để HUD không tự ý xuất hiện khi chưa có lệnh.
+            console.log("[CEF HUD] Sẵn sàng chờ lệnh gọi từ Server...");
         }
     </script>
 </body>
