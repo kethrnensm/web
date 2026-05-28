@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SA-RP HUD Stats</title>
     
-    <!-- Google Fonts & FontAwesome Icons (Giống bộ nguồn Giao diện Việc làm của bạn) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -22,11 +21,12 @@
             user-select: none;
         }
 
-        /* Khung định vị bộ thanh chỉ số (Nằm góc dưới bên phải màn hình) */
+        /* KHUNG ĐỊNH VỊ: ĐÃ CHỈNH VỀ NẰM GIỮA - SÁT CẠNH TRÁI */
         #player-hud-stats {
             position: absolute;
-            bottom: 25px;
-            right: 25px;
+            top: 50%;                   /* Đẩy xuống chính giữa theo chiều dọc */
+            left: 20px;                 /* Căn sát lề trái màn hình (cách lề 20px) */
+            transform: translateY(-50%);/* Giữ chuẩn xác tâm giữa không bị lệch */
             width: 210px;
             display: flex;
             flex-direction: column;
@@ -34,15 +34,15 @@
             z-index: 9999;
         }
 
-        /* Thiết kế ô bọc thanh chỉ số (Style Cyberpunk / Roleplay bán trong suốt) */
+        /* Ô BỌC THANH CHỈ SỐ: ĐÃ XÓA KHOẢNG TRẮNG BAO BỌC (BORDER) */
         .stat-bar-box {
             display: flex;
             align-items: center;
-            background: rgba(0, 0, 0, 0.6); /* Nền đen mờ */
+            background: rgba(0, 0, 0, 0.6); /* Nền đen mờ giúp nổi bật chỉ số */
             padding: 6px 10px;
             border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(4px); /* Làm mờ nhẹ cảnh game phía sau nền */
+            border: none;                   /* Xóa bỏ border cũ để mất viền trắng */
+            backdrop-filter: blur(4px);     /* Làm mờ nhẹ cảnh game phía sau nền */
             transition: all 0.3s ease;
         }
 
@@ -98,7 +98,7 @@
         /* Hiệu ứng Nhấp Nháy Cảnh Báo Nguy Hiểm khi sắp cạn chỉ số (< 20%) */
         @keyframes hud-blink-danger {
             0% { opacity: 1; background: rgba(0, 0, 0, 0.6); }
-            50% { opacity: 0.6; background: rgba(231, 76, 60, 0.35); border-color: rgba(231, 76, 60, 0.6); }
+            50% { opacity: 0.6; background: rgba(231, 76, 60, 0.35); }
             100% { opacity: 1; background: rgba(0, 0, 0, 0.6); }
         }
         .bar-danger {
@@ -108,10 +108,8 @@
 </head>
 <body>
 
-    <!-- GIAO DIỆN HIỂN THỊ THANH HUD -->
     <div id="player-hud-stats">
         
-        <!-- Ô Chỉ Số Thức Ăn -->
         <div class="stat-bar-box">
             <div class="stat-icon icon-hunger">
                 <i class="fa-solid fa-burger"></i>
@@ -122,7 +120,6 @@
             <span id="text-hunger" class="stat-value-text">100%</span>
         </div>
 
-        <!-- Ô Chỉ Số Nước Uống -->
         <div class="stat-bar-box">
             <div class="stat-icon icon-thirst">
                 <i class="fa-solid fa-bottle-water"></i>
@@ -135,7 +132,6 @@
 
     </div>
 
-    <!-- XỬ LÝ ĐỒNG BỘ DỮ LIỆU TỪ GAME SERVER (PAWN -> CEF) -->
     <script>
         // Hàm cập nhật trạng thái Đói & Khát (Được gọi khi có event từ Server)
         function updatePlayerStats(eventData) {
@@ -191,14 +187,13 @@
         }
 
         // ĐĂNG KÝ CALLBACK LẮNG NGHE SỰ KIỆN TỪ GAME SERVER SA-MP XUỐNG
-        // Server Pawn sẽ gọi tên event: "hud_update_stats" và truyền chuỗi dạng "[hunger, thirst]"
         if (typeof Cef !== 'undefined') {
             Cef.registerEventCallback("hud_update_stats", "updatePlayerStats");
         } else {
-            // Dòng test thử nghiệm trên trình duyệt Web máy tính (Bạn có thể xóa đi khi đưa vào game)
+            // Dòng dữ liệu kiểm thử giả lập khi bật trên Trình duyệt PC
             console.log("[CEF HUD] Đang chạy trên trình duyệt thường. Test thử dữ liệu...");
             setTimeout(() => {
-                updatePlayerStats("[85, 15]"); // Giả lập Thức ăn 85%, Nước uống 15% (thanh nước sẽ nhấp nháy)
+                updatePlayerStats("[80, 15]"); 
             }, 1000);
         }
     </script>
