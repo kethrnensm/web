@@ -20,13 +20,13 @@
             user-select: none;
         }
 
-        /* ĐÃ SỬA: Chuyển về display: flex hiển thị sẵn để không bao giờ lo bị mất hút */
+        /* ĐÃ SỬA: Để mặc định là none để GIẤU HUD lúc chưa login */
         #player-hud-stats {
             position: absolute;
             bottom: 80px;               
             left: 15px;                 
             width: 195px;               
-            display: flex;              
+            display: none;              
             flex-direction: column;
             gap: 6px;
             z-index: 9999;
@@ -123,19 +123,31 @@
     </div>
 
     <script>
-        /* ĐÃ NÂNG CẤP: Bộ lọc dữ liệu đa năng chống sập Script */
+        // THÊM: Hàm tiếp nhận lệnh ẩn/hiện từ Pawn ("hud_toggle")
+        function toggleHudStatus(status) {
+            try {
+                const hudContainer = document.getElementById('player-hud-stats');
+                if (!hudContainer) return;
+
+                if (parseInt(status, 10) === 1) {
+                    hudContainer.style.display = 'flex'; // Hiện HUD
+                } else {
+                    hudContainer.style.display = 'none'; // Ẩn HUD
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        /* Bộ lọc dữ liệu đa năng chống sập Script */
         function updatePlayerStats(arg1, arg2) {
             let hunger = 100;
             let thirst = 100;
 
             try {
-                // KIỂU 1: Nếu dữ liệu nhận về là một chuỗi mảng JSON "[100, 100]"
                 if (typeof arg1 === 'string' && arg1.trim().startsWith('[')) {
                     const data = JSON.parse(arg1);
                     hunger = parseInt(data[0], 10);
                     thirst = parseInt(data[1], 10);
                 } 
-                // KIỂU 2: Nếu CEF tự rã thành 2 tham số riêng (arg1 = hunger, arg2 = thirst)
                 else if (arg1 !== undefined) {
                     hunger = parseInt(arg1, 10);
                     if (arg2 !== undefined) {
@@ -143,13 +155,10 @@
                     }
                 }
 
-                // Đảm bảo dữ liệu không bị lỗi NaN và luôn trong phạm vi 0 -> 100
                 if (isNaN(hunger) || hunger < 0) hunger = 0; if (hunger > 100) hunger = 100;
                 if (isNaN(thirst) || thirst < 0) thirst = 0; if (thirst > 100) thirst = 100;
 
-                // ------------------------------------
                 // CẬP NHẬT THANH THỨC ĂN (HUNGER)
-                // ------------------------------------
                 const barHunger = document.getElementById('bar-hunger');
                 const textHunger = document.getElementById('text-hunger');
                 if (barHunger && textHunger) {
@@ -161,9 +170,7 @@
                     else hungerBox.classList.remove('bar-danger');
                 }
 
-                // ------------------------------------
                 // CẬP NHẬT THANH NƯỚC UỐNG (THIRST)
-                // ------------------------------------
                 const barThirst = document.getElementById('bar-thirst');
                 const textThirst = document.getElementById('text-thirst');
                 if (barThirst && textThirst) {
@@ -182,6 +189,7 @@
 
         // ĐĂNG KÝ LẮNG NGHE SỰ KIỆN TỪ GAME SERVER
         if (typeof Cef !== 'undefined') {
+            Cef.registerEventCallback("hud_toggle", "toggleHudStatus"); // <-- ĐÃ THÊM LẮNG NGHE BẬT TẮT
             Cef.registerEventCallback("hud_update_stats", "updatePlayerStats");
         }
     </script>
