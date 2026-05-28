@@ -15,33 +15,36 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            background: transparent;
+            background: transparent !important;
             overflow: hidden;
             font-family: 'Inter', 'Roboto', sans-serif;
             user-select: none;
         }
 
-        /* KHUNG ĐỊNH VỊ: ĐÃ CHỈNH VỀ NẰM GIỮA - SÁT CẠNH TRÁI */
+        /* KHUNG ĐỊNH VỊ: ĐÃ DỊCH XUỐNG GÓC DƯỚI BÊN TRÁI (NGAY TRÊN CHỖ FPS) */
         #player-hud-stats {
             position: absolute;
-            top: 50%;                   /* Đẩy xuống chính giữa theo chiều dọc */
-            left: 20px;                 /* Căn sát lề trái màn hình (cách lề 20px) */
-            transform: translateY(-50%);/* Giữ chuẩn xác tâm giữa không bị lệch */
-            width: 210px;
+            bottom: 80px;               /* Đẩy lên cách đáy 80px để nằm vừa vặn trên dòng FPS */
+            left: 15px;                 /* Căn sát lề lề trái */
+            width: 195px;               /* Thu gọn nhẹ độ rộng để giao diện tinh tế hơn */
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             z-index: 9999;
         }
 
-        /* Ô BỌC THANH CHỈ SỐ: ĐÃ XÓA KHOẢNG TRẮNG BAO BỌC (BORDER) */
+        /* Ô BỌC THANH CHỈ SỐ: THÊM !IMPORTANT ĐỂ TRIỆT TIÊU VIỀN TRẮNG */
         .stat-bar-box {
             display: flex;
             align-items: center;
             background: rgba(0, 0, 0, 0.6); /* Nền đen mờ giúp nổi bật chỉ số */
-            padding: 6px 10px;
+            padding: 5px 8px;
             border-radius: 6px;
-            border: none;                   /* Xóa bỏ border cũ để mất viền trắng */
+            
+            /* Ép hệ thống xóa bỏ mọi khung viền trắng phát sinh */
+            border: none !important;        
+            outline: none !important;
+            
             backdrop-filter: blur(4px);     /* Làm mờ nhẹ cảnh game phía sau nền */
             transition: all 0.3s ease;
         }
@@ -193,7 +196,7 @@
             // Dòng dữ liệu kiểm thử giả lập khi bật trên Trình duyệt PC
             console.log("[CEF HUD] Đang chạy trên trình duyệt thường. Test thử dữ liệu...");
             setTimeout(() => {
-                updatePlayerStats("[80, 15]"); 
+                updatePlayerStats("[90, 15]"); 
             }, 1000);
         }
     </script>
