@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* Reset nền về trong suốt để không che mất màn hình game */
         body, html {
             margin: 0;
             padding: 0;
@@ -21,35 +20,30 @@
             user-select: none;
         }
 
-        /* KHUNG ĐỊNH VỊ: ĐÃ SỬA ĐỂ MẶC ĐỊNH ẨN HOÀN TOÀN (DISPLAY: NONE) */
+        /* Khung định vị HUD: Mặc định ẩn, Pawn gọi sẽ hiện */
         #player-hud-stats {
             position: absolute;
-            bottom: 80px;               /* Đẩy lên cách đáy 80px để nằm vừa vặn trên dòng FPS */
-            left: 15px;                 /* Căn sát lề lề trái */
-            width: 195px;               /* Thu gọn nhẹ độ rộng để giao diện tinh tế hơn */
-            display: none;              /* <--- QUAN TRỌNG: Mặc định ẩn, khi có dữ liệu mới hiện bằng JS */
+            bottom: 80px;               
+            left: 15px;                 
+            width: 195px;               
+            display: none;              /* <--- Giữ nguyên ẩn mặc định để tránh rác màn hình */
             flex-direction: column;
             gap: 6px;
             z-index: 9999;
         }
 
-        /* Ô BỌC THANH CHỈ SỐ: THÊM !IMPORTANT ĐỂ TRIỆT TIÊU VIỀN TRẮNG */
         .stat-bar-box {
             display: flex;
             align-items: center;
-            background: rgba(0, 0, 0, 0.6); /* Nền đen mờ giúp nổi bật chỉ số */
+            background: rgba(0, 0, 0, 0.6); 
             padding: 5px 8px;
             border-radius: 6px;
-            
-            /* Ép hệ thống xóa bỏ mọi khung viền trắng phát sinh */
             border: none !important;        
             outline: none !important;
-            
-            backdrop-filter: blur(4px);     /* Làm mờ nhẹ cảnh game phía sau nền */
+            backdrop-filter: blur(4px);     
             transition: all 0.3s ease;
         }
 
-        /* Khu vực Icon */
         .stat-icon {
             font-size: 13px;
             width: 22px;
@@ -57,10 +51,9 @@
             justify-content: center;
             align-items: center;
         }
-        .icon-hunger { color: #ff9f43; } /* Màu cam đại diện thức ăn */
-        .icon-thirst { color: #00d2d3; } /* Màu xanh đại diện nước uống */
+        .icon-hunger { color: #ff9f43; } 
+        .icon-thirst { color: #00d2d3; } 
 
-        /* Thanh nền rỗng phía sau */
         .stat-progress-bg {
             flex: 1;
             height: 7px;
@@ -70,15 +63,13 @@
             overflow: hidden;
         }
 
-        /* Thanh tiến trình thực tế chạy theo % */
         .stat-progress-fill {
             height: 100%;
             border-radius: 4px;
             width: 100%; 
-            transition: width 0.4s ease-in-out; /* Hiệu ứng tụt/tăng thanh mượt mà */
+            transition: width 0.4s ease-in-out; 
         }
 
-        /* Hiệu ứng màu Gradient đổ từ trái sang phải */
         #bar-hunger {
             background: linear-gradient(90deg, #ff9f43, #ff5252);
             box-shadow: 0 0 4px rgba(255, 159, 67, 0.4);
@@ -88,7 +79,6 @@
             box-shadow: 0 0 4px rgba(0, 210, 211, 0.4);
         }
 
-        /* Chữ hiển thị số phần trăm (%) */
         .stat-value-text {
             font-size: 11px;
             font-weight: 700;
@@ -98,7 +88,6 @@
             text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
         }
 
-        /* Hiệu ứng Nhấp Nháy Cảnh Báo Nguy Hiểm khi sắp cạn chỉ số (< 20%) */
         @keyframes hud-blink-danger {
             0% { opacity: 1; background: rgba(0, 0, 0, 0.6); }
             50% { opacity: 0.6; background: rgba(231, 76, 60, 0.35); }
@@ -112,7 +101,6 @@
 <body>
 
     <div id="player-hud-stats">
-        
         <div class="stat-bar-box">
             <div class="stat-icon icon-hunger">
                 <i class="fa-solid fa-burger"></i>
@@ -132,75 +120,62 @@
             </div>
             <span id="text-thirst" class="stat-value-text">100%</span>
         </div>
-
     </div>
 
     <script>
-        // Hàm cập nhật trạng thái Đói & Khát (Được gọi khi có event từ Server)
-        function updatePlayerStats(eventData) {
+        /* ĐÃ SỬA: Nhận trực tiếp 2 biến hunger và thirst do SAMPMobileCef tự động bóc tách */
+        function updatePlayerStats(hunger, thirst) {
             try {
-                // Kích hoạt hiển thị khung HUD ngay khi Pawn gọi dữ liệu xuống lần đầu
+                // Hiện khung HUD lên ngay lập tức khi nhận được tín hiệu từ Server
                 const hudContainer = document.getElementById('player-hud-stats');
                 if (hudContainer && hudContainer.style.display !== 'flex') {
                     hudContainer.style.display = 'flex';
                 }
 
-                // Phân rã chuỗi JSON nhận được từ Server thành mảng [hunger, thirst]
-                const eventDataJson = JSON.parse(eventData);
-                
-                let hunger = parseInt(eventDataJson[0], 10);
-                let thirst = parseInt(eventDataJson[1], 10);
+                // Ép dữ liệu về dạng số nguyên an toàn
+                let h = parseInt(hunger, 10);
+                let t = parseInt(thirst, 10);
 
-                // Giới hạn dữ liệu luôn nằm trong khoảng an toàn từ 0 đến 100
-                if (isNaN(hunger) || hunger < 0) hunger = 0; if (hunger > 100) hunger = 100;
-                if (isNaN(thirst) || thirst < 0) thirst = 0; if (thirst > 100) thirst = 100;
+                if (isNaN(h) || h < 0) h = 0; if (h > 100) h = 100;
+                if (isNaN(t) || t < 0) t = 0; if (t > 100) t = 100;
 
-                // ------------------------------------
                 // 1. CẬP NHẬT THANH THỨC ĂN (HUNGER)
-                // ------------------------------------
                 const barHunger = document.getElementById('bar-hunger');
                 const textHunger = document.getElementById('text-hunger');
                 if (barHunger && textHunger) {
-                    barHunger.style.width = hunger + "%";
-                    textHunger.innerText = hunger + "%";
+                    barHunger.style.width = h + "%";
+                    textHunger.innerText = h + "%";
 
-                    // Kích hoạt nhấp nháy đỏ nếu đói dưới hoặc bằng 20%
                     const hungerBox = barHunger.closest('.stat-bar-box');
-                    if (hunger <= 20) {
+                    if (h <= 20) {
                         hungerBox.classList.add('bar-danger');
                     } else {
                         hungerBox.classList.remove('bar-danger');
                     }
                 }
 
-                // ------------------------------------
                 // 2. CẬP NHẬT THANH NƯỚC UỐNG (THIRST)
-                // ------------------------------------
                 const barThirst = document.getElementById('bar-thirst');
                 const textThirst = document.getElementById('text-thirst');
                 if (barThirst && textThirst) {
-                    barThirst.style.width = thirst + "%";
-                    textThirst.innerText = thirst + "%";
+                    barThirst.style.width = t + "%";
+                    textThirst.innerText = t + "%";
 
-                    // Kích hoạt nhấp nháy đỏ nếu khát dưới hoặc bằng 20%
                     const thirstBox = barThirst.closest('.stat-bar-box');
-                    if (thirst <= 20) {
+                    if (t <= 20) {
                         thirstBox.classList.add('bar-danger');
                     } else {
                         thirstBox.classList.remove('bar-danger');
                     }
                 }
             } catch (error) {
-                console.error("[HUD Error] Lỗi phân tách dữ liệu nhận từ Server:", error);
+                console.error("[CEF HUD Error]:", error);
             }
         }
 
-        // ĐĂNG KÝ CALLBACK LẮNG NGHE SỰ KIỆN TỪ GAME SERVER SA-MP XUỐNG
+        // ĐĂNG KÝ CALLBACK LẮNG NGHE SỰ KIỆN TỪ GAME SERVER
         if (typeof Cef !== 'undefined') {
             Cef.registerEventCallback("hud_update_stats", "updatePlayerStats");
-        } else {
-            // Đã xóa phần chạy giả lập tự động để HUD không tự ý xuất hiện khi chưa có lệnh.
-            console.log("[CEF HUD] Sẵn sàng chờ lệnh gọi từ Server...");
         }
     </script>
 </body>
