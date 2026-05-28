@@ -1,0 +1,109 @@
+/* Lớp phủ làm tối màn hình game */
+.radial-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.5); /* Tối mờ y như ảnh */
+    display: none; /* Mặc định ẩn */
+    justify-content: center; 
+    align-items: center;
+    z-index: 10000;
+}
+
+/* Khung chứa Menu */
+.radial-menu {
+    position: relative;
+    width: 350px; 
+    height: 350px;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+}
+
+/* Nền đen tròn và vẽ vạch chia 9 ô (Mỗi ô 40 độ) */
+.radial-bg {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    border-radius: 50%;
+    /* Góc bắt đầu xoay lệch 20 độ để ô đầu tiên nằm chuẩn 12 giờ */
+    background: repeating-conic-gradient(
+        from 20deg,
+        rgba(255, 255, 255, 0.2) 0deg,      /* Màu vạch kẻ */
+        rgba(255, 255, 255, 0.2) 2px,       /* Độ dày vạch kẻ 2px */
+        rgba(30, 30, 35, 0.95) 2px,         /* Màu nền Menu đen mờ */
+        rgba(30, 30, 35, 0.95) 40deg        /* Chiếm hết 40 độ rồi lặp lại */
+    );
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.6);
+}
+
+/* Định vị trí cho từng ô bằng Toán Học */
+.menu-item-wrapper {
+    position: absolute;
+    top: 50%; left: 50%;
+    /* Xoay hướng và đẩy ra xa tâm 115px */
+    transform: rotate(calc(var(--i) * 40deg)) translateY(-115px);
+}
+
+/* Trả nội dung về thẳng đứng và định dạng chữ */
+.menu-item {
+    /* Xoay ngược lại 40 độ để chữ luôn đứng */
+    transform: rotate(calc(var(--i) * -40deg));
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    width: 80px; height: 80px;
+    margin-top: -40px; margin-left: -40px; /* Căn giữa hoàn hảo */
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.menu-item i {
+    color: #00cec9; /* Màu xanh y hệt trong hình */
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.menu-item span {
+    color: #ffffff;
+    font-family: 'Arial', sans-serif;
+    font-size: 9px;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+/* Hiệu ứng khi nhấn/chạm vào ô */
+.menu-item:hover, .menu-item:active {
+    /* Bắt buộc phải giữ rotate cũ trước khi scale để không bị lỗi xoay */
+    transform: rotate(calc(var(--i) * -40deg)) scale(1.15); 
+}
+.menu-item:hover i, .menu-item:active i {
+    color: #ffffff;
+    text-shadow: 0 0 10px #00cec9;
+}
+
+/* Nút CLOSE ở giữa */
+.menu-center-btn {
+    position: absolute;
+    z-index: 2;
+    width: 85px; height: 85px;
+    border-radius: 50%;
+    background: #1a1a1e;
+    border: 2px solid #00cec9;
+    color: #00cec9;
+    font-family: 'Arial', sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(0, 206, 201, 0.2) inset;
+    transition: 0.2s;
+}
+
+.menu-center-btn:hover, .menu-center-btn:active {
+    background: #00cec9;
+    color: #1a1a1e;
+    box-shadow: 0 0 20px #00cec9;
+}
