@@ -1,11 +1,11 @@
-/* Container đặt ở góc dưới bên trái màn hình, né bản đồ */
+
 .game-hud-container {
   position: absolute;
-  bottom: 45px; /* Khoảng cách từ đáy màn hình lên */
-  left: 25px;   /* Khoảng cách từ mép trái màn hình vào */
-  display: flex;
+  bottom: 45px;  /* Khoảng cách từ đáy màn hình lên */
+  left: 25px;    /* Khoảng cách từ mép trái màn hình vào */
+  display: none; /* Mặc định ẩn hoàn toàn khi vừa load trang để chờ gọi bật lúc Spawn */
   flex-direction: column;
-  gap: 10px;    /* Khoảng cách giữa thanh đói và thanh nước */
+  gap: 10px;     /* Khoảng cách giữa thanh đói và thanh nước */
   font-family: 'Arial', sans-serif;
   z-index: 9999;
 }
@@ -43,19 +43,20 @@
 .hud-fill {
   height: 100%;
   border-radius: 10px;
-  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); /* Animation tụt thanh siêu mượt */
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); /* Animation tụt/tăng thanh siêu mượt */
 }
 
-/* Màu sắc chuẩn theo ảnh mẫu */
+/* Màu sắc chuẩn cho thanh thức ăn (Màu cam san hô) */
 #hunger-bar {
-  background: #ff793f; /* Màu cam san hô của thanh đói */
+  background: #ff793f; 
 }
+
 
 #water-bar {
-  background: #00cec9; /* Màu xanh ngọc rực của thanh nước */
+  background: #00cec9; 
 }
 
-/* Chữ hiển thị phần trăm phía bên phải */
+
 .hud-text {
   color: #ffffff;
   font-size: 13px;
