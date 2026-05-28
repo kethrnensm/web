@@ -15,7 +15,15 @@
     </script>
 </head>
 <body>
-    <iframe src="hunger.html" id="layer-hud" class="ui-layer"></iframe>
+    <object data="hunger.html" id="layer-hud" class="ui-layer" 
+        style="position: absolute; 
+               bottom: 0; 
+               left: 0; 
+               width: 100vw; 
+               height: 100vh; 
+               pointer-events: none; 
+               z-index: 9999;">
+</object>
     <div id="alert-overlay" class="hidden">
         <div class="alert-box">
             <div class="alert-content">
