@@ -16,14 +16,9 @@
 </head>
 <body>
     <object data="hunger.html" id="layer-hud" class="ui-layer" 
-        style="position: absolute; 
-               bottom: 0; 
-               left: 0; 
-               width: 100vw; 
-               height: 100vh; 
-               pointer-events: none; 
-               z-index: 9999;">
+        style="position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999;">
 </object>
+
     <div id="alert-overlay" class="hidden">
         <div class="alert-box">
             <div class="alert-content">
@@ -711,5 +706,25 @@
     <script src="script.js"></script>
     <script src="hub/phone.js"></script>
     <script src="nvc.js"></script>
+    <script>
+    // Đăng ký nhận sự kiện tại file tổng (index.html)
+    if (typeof Cef !== 'undefined') {
+        Cef.registerEventCallback("hud_update_stats", function(eventData) {
+            // Tìm đến thẻ object của hunger.html
+            const hudObject = document.getElementById('layer-hud');
+            
+            if (hudObject && hudObject.contentDocument) {
+                // Truy cập vào môi trường Javascript bên trong file hunger.html
+                const hungerWindow = hudObject.contentDocument.defaultView;
+                
+                // Nếu tìm thấy hàm updatePlayerStats bên trong file con, kích hoạt nó ngay!
+                if (hungerWindow && typeof hungerWindow.updatePlayerStats === 'function') {
+                    hungerWindow.updatePlayerStats(eventData);
+                }
+            }
+        });
+    }
+</script>
+
 </body>
 </html>
