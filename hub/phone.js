@@ -1,5 +1,5 @@
 /* ==========================================================
-   SMARTPHONE SYSTEM - SA-RP MOBILE CEF (FULL FIXED)
+   SMARTPHONE SYSTEM - SA-RP MOBILE CEF (CLEAN & OPTIMIZED)
    ========================================================== */
 
 let isOutgoingCall = false; 
@@ -9,19 +9,19 @@ let isPhoneOpen = false;
 let callTimerInterval = null;
 let callSeconds = 0;
 let phoneContacts = [];
-let chatHistory = {}; // Biến lưu toàn bộ lịch sử tin nhắn trong phiên chơi
-let currentChatNumber = ""; // Đang mở chat với ai
-let bankHistory = []; // Mảng lưu lịch sử giao dịch
+let chatHistory = {}; 
+let currentChatNumber = ""; 
+let bankHistory = []; 
 let tactoPosts = [];
 let myGallery = [];
 let contextPhotoUrl = "";
 let selectedTactoImgUrl = "";
 let currentServiceType = "";
-let globalMarketData = null; // Biến nhớ dữ liệu
+let globalMarketData = null; 
 let bankLoading = false;
 
 // ==========================================
-// 1. HỆ THỐNG ĐÓNG / MỞ / ĐIỀU HƯỚNG
+// 1. HỆ THỐNG ĐÓNG / MỞ / ĐIỀU HƯỚNG APP
 // ==========================================
 window.showPhone = function(show, timeStr) {
     const phWrapper = document.getElementById('phone-wrapper');
@@ -38,7 +38,7 @@ window.showPhone = function(show, timeStr) {
         phWrapper.classList.remove('active');
         isPhoneOpen = false;
         
-        // Gọi lệnh về Pawn để tắt chuột & giải phóng bàn phím di chuyển
+        // Gọi lệnh về Pawn để tắt chuột & giải phóng bàn phím di chuyển trên Mobile
         window.sendToGame('client:phone_close');
     }
 }
@@ -70,6 +70,7 @@ window.goHome = function() {
     if(homeScreen) homeScreen.classList.add('active');
 }
 
+// HÀM ĐỒNG BỘ NÚT BẤM CÁC APP TRÊN MÀN HÌNH CHÍNH HTML
 window.openApp = function(appName) {
     const screens = document.querySelectorAll('.ph-screen');
     screens.forEach(el => el.classList.remove('active'));
@@ -82,9 +83,9 @@ window.openApp = function(appName) {
             window.sendToGame('client:phone_get_contacts');
         }
         else if(appName === 'bank') {
-            if(bankLoading) return; // chặn spam
+            if(bankLoading) return; 
             bankLoading = true;
-            setTimeout(() => bankLoading = false, 3000); // reset sau 3s
+            setTimeout(() => bankLoading = false, 3000); 
             window.sendToGame('client:phone_get_bank');
         }
         else if(appName === 'tacto') {
@@ -97,6 +98,12 @@ window.openApp = function(appName) {
             window.sendToGame('client:phone_get_market');
         }
     }
+}
+
+// Hàm kích hoạt ứng dụng khi bấm vào nút "Việc làm" trên HTML
+window.triggerServerApp = function(appName) {
+    // Gửi sự kiện lên Pawn kèm tên app (ví dụ: 'jobs', 'vieclam'...)
+    window.sendToGame('client:trigger_server_app', appName);
 }
 
 // ==========================================
@@ -378,7 +385,12 @@ window.openChat = function(name, number) {
     renderChatList(); 
 }
 
-window.handleChatEnter = function(e) { if(e.key === 'Enter') window.sendChatMessage(); }
+window.handleChatEnter = function(e) { 
+    if(e.key === 'Enter' || e.keyCode === 13) { 
+        window.sendChatMessage(); 
+        document.getElementById('ph-chat-input').blur(); 
+    } 
+}
 
 window.sendChatMessage = function() {
     const inputEl = document.getElementById('ph-chat-input');
@@ -438,10 +450,9 @@ window.showSMSNotify = function(name, text, number) {
 }
 
 // ==========================================
-// 6. HỆ THỐNG GIAO TIẾP VÀ ĐĂNG KÝ SỰ KIỆN CEF CHUẨN (FIXED)
+// 6. HỆ THỐNG GIAO TIẾP VÀ ĐĂNG KÝ SỰ KIỆN CEF CHUẨN
 // ==========================================
 
-// HÀM GỬI LÊN SERVER PAWN
 window.sendToGame = function(eventName, data = "") {
     if (typeof Cef !== 'undefined' && typeof Cef.sendEvent === 'function') {
         Cef.sendEvent(eventName, String(data));
@@ -450,7 +461,6 @@ window.sendToGame = function(eventName, data = "") {
     }
 }
 
-// Hàm hỗ trợ Parse dữ liệu an toàn tránh crash
 function parseEventData(eventData) {
     try { 
         return JSON.parse(eventData); 
@@ -459,7 +469,6 @@ function parseEventData(eventData) {
     }
 }
 
-// Đăng ký toàn bộ callback hứng sự kiện từ Game gửi xuống Web
 function InitCefCallbacks() {
     if (typeof Cef === 'undefined') return;
 
@@ -512,12 +521,10 @@ function InitCefCallbacks() {
     };
 }
 
-// [FIX QUAN TRỌNG] Đợi toàn bộ HTML nạp xong hoàn toàn mới tiến hành đăng ký lắng nghe sự kiện
 document.addEventListener("DOMContentLoaded", function() {
     if (typeof Cef !== 'undefined') {
         InitCefCallbacks();
     } else {
-        // Dự phòng trường hợp thư viện CEF trên Mobile khởi tạo trễ hơn trang web
         document.addEventListener("OnCefInit", function() {
             InitCefCallbacks();
         });
