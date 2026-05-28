@@ -20,13 +20,13 @@
             user-select: none;
         }
 
-        /* Khung định vị HUD: Mặc định ẩn, Pawn gọi sẽ hiện */
+        /* ĐÃ SỬA: Chuyển về display: flex hiển thị sẵn để không bao giờ lo bị mất hút */
         #player-hud-stats {
             position: absolute;
             bottom: 80px;               
             left: 15px;                 
             width: 195px;               
-            display: none;              /* <--- Giữ nguyên ẩn mặc định để tránh rác màn hình */
+            display: flex;              
             flex-direction: column;
             gap: 6px;
             z-index: 9999;
@@ -123,57 +123,64 @@
     </div>
 
     <script>
-        /* ĐÃ SỬA: Nhận trực tiếp 2 biến hunger và thirst do SAMPMobileCef tự động bóc tách */
-        function updatePlayerStats(hunger, thirst) {
+        /* ĐÃ NÂNG CẤP: Bộ lọc dữ liệu đa năng chống sập Script */
+        function updatePlayerStats(arg1, arg2) {
+            let hunger = 100;
+            let thirst = 100;
+
             try {
-                // Hiện khung HUD lên ngay lập tức khi nhận được tín hiệu từ Server
-                const hudContainer = document.getElementById('player-hud-stats');
-                if (hudContainer && hudContainer.style.display !== 'flex') {
-                    hudContainer.style.display = 'flex';
+                // KIỂU 1: Nếu dữ liệu nhận về là một chuỗi mảng JSON "[100, 100]"
+                if (typeof arg1 === 'string' && arg1.trim().startsWith('[')) {
+                    const data = JSON.parse(arg1);
+                    hunger = parseInt(data[0], 10);
+                    thirst = parseInt(data[1], 10);
+                } 
+                // KIỂU 2: Nếu CEF tự rã thành 2 tham số riêng (arg1 = hunger, arg2 = thirst)
+                else if (arg1 !== undefined) {
+                    hunger = parseInt(arg1, 10);
+                    if (arg2 !== undefined) {
+                        thirst = parseInt(arg2, 10);
+                    }
                 }
 
-                // Ép dữ liệu về dạng số nguyên an toàn
-                let h = parseInt(hunger, 10);
-                let t = parseInt(thirst, 10);
+                // Đảm bảo dữ liệu không bị lỗi NaN và luôn trong phạm vi 0 -> 100
+                if (isNaN(hunger) || hunger < 0) hunger = 0; if (hunger > 100) hunger = 100;
+                if (isNaN(thirst) || thirst < 0) thirst = 0; if (thirst > 100) thirst = 100;
 
-                if (isNaN(h) || h < 0) h = 0; if (h > 100) h = 100;
-                if (isNaN(t) || t < 0) t = 0; if (t > 100) t = 100;
-
-                // 1. CẬP NHẬT THANH THỨC ĂN (HUNGER)
+                // ------------------------------------
+                // CẬP NHẬT THANH THỨC ĂN (HUNGER)
+                // ------------------------------------
                 const barHunger = document.getElementById('bar-hunger');
                 const textHunger = document.getElementById('text-hunger');
                 if (barHunger && textHunger) {
-                    barHunger.style.width = h + "%";
-                    textHunger.innerText = h + "%";
+                    barHunger.style.width = hunger + "%";
+                    textHunger.innerText = hunger + "%";
 
                     const hungerBox = barHunger.closest('.stat-bar-box');
-                    if (h <= 20) {
-                        hungerBox.classList.add('bar-danger');
-                    } else {
-                        hungerBox.classList.remove('bar-danger');
-                    }
+                    if (hunger <= 20) hungerBox.classList.add('bar-danger');
+                    else hungerBox.classList.remove('bar-danger');
                 }
 
-                // 2. CẬP NHẬT THANH NƯỚC UỐNG (THIRST)
+                // ------------------------------------
+                // CẬP NHẬT THANH NƯỚC UỐNG (THIRST)
+                // ------------------------------------
                 const barThirst = document.getElementById('bar-thirst');
                 const textThirst = document.getElementById('text-thirst');
                 if (barThirst && textThirst) {
-                    barThirst.style.width = t + "%";
-                    textThirst.innerText = t + "%";
+                    barThirst.style.width = thirst + "%";
+                    textThirst.innerText = thirst + "%";
 
                     const thirstBox = barThirst.closest('.stat-bar-box');
-                    if (t <= 20) {
-                        thirstBox.classList.add('bar-danger');
-                    } else {
-                        thirstBox.classList.remove('bar-danger');
-                    }
+                    if (thirst <= 20) thirstBox.classList.add('bar-danger');
+                    else thirstBox.classList.remove('bar-danger');
                 }
+
             } catch (error) {
-                console.error("[CEF HUD Error]:", error);
+                console.error("[CEF HUD Error] Lỗi phân tích:", error);
             }
         }
 
-        // ĐĂNG KÝ CALLBACK LẮNG NGHE SỰ KIỆN TỪ GAME SERVER
+        // ĐĂNG KÝ LẮNG NGHE SỰ KIỆN TỪ GAME SERVER
         if (typeof Cef !== 'undefined') {
             Cef.registerEventCallback("hud_update_stats", "updatePlayerStats");
         }
