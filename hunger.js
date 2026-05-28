@@ -21,6 +21,26 @@ function updateStatusHUD(eventData) {
         console.error("Lỗi đồng bộ dữ liệu HUD hình ảnh:", error);
     }
 }
+// Hàm Ẩn/Hiện giao diện HUD
+function toggleHUD(eventData) {
+    try {
+        const data = JSON.parse(eventData);
+        const isVisible = data[0]; // Server sẽ gửi true (hiện) hoặc false (ẩn)
+
+        // Tìm thẻ container chứa toàn bộ HUD của bạn (thay class cho khớp với HTML của bạn)
+        const hudContainer = document.querySelector('.game-hud-container'); 
+        
+        if (hudContainer) {
+            // Chuyển đổi trạng thái hiển thị
+            hudContainer.style.display = isVisible ? 'flex' : 'none'; 
+        }
+    } catch (error) {
+        console.error("Lỗi đồng bộ trạng thái Ẩn/Hiện HUD:", error);
+    }
+}
+
+// Đăng ký nhận sự kiện Ẩn/Hiện từ Server
+Cef.registerEventCallback("hud_toggle", "toggleHUD");
 
 // Đăng ký nhận sự kiện từ hệ thống game của bạn
 Cef.registerEventCallback("hud_update", "updateStatusHUD");
