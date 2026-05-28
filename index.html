@@ -6,6 +6,8 @@
     <title>CEF Example Web</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="hunger.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
     <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
     <script>
         // Khởi tạo vConsole ngay lập tức
@@ -47,6 +49,61 @@
     </div>
     <span id="water-text" class="hud-text">100%</span>
   </div>
+</div>
+<div class="radial-overlay" id="radialMenuOverlay" style="display: none;">
+    <div class="radial-menu">
+        <div class="radial-bg"></div>
+
+        <div class="menu-item-wrapper" style="--i: 0;">
+            <div class="menu-item" onclick="selectRadialItem('thongtin')">
+                <i class="fa-solid fa-user"></i><span>THÔNG TIN</span>
+            </div>
+        </div>
+        <div class="menu-item-wrapper" style="--i: 1;">
+            <div class="menu-item" onclick="selectRadialItem('balo')">
+                <i class="fa-solid fa-briefcase"></i><span>BALO</span>
+            </div>
+        </div>
+        <div class="menu-item-wrapper" style="--i: 2;">
+            <div class="menu-item" onclick="selectRadialItem('khoxe')">
+                <i class="fa-solid fa-car"></i><span>KHO XE</span>
+            </div>
+        </div>
+        <div class="menu-item-wrapper" style="--i: 3;">
+            <div class="menu-item" onclick="selectRadialItem('congviec')">
+                <i class="fa-solid fa-clipboard-user"></i><span>CÔNG VIỆC</span>
+            </div>
+        </div>
+        <div class="menu-item-wrapper" style="--i: 4;">
+            <div class="menu-item" onclick="selectRadialItem('diemdanh')">
+                <i class="fa-solid fa-calendar-check"></i><span>ĐIỂM DANH</span>
+            </div>
+        </div>
+        <div class="menu-item-wrapper" style="--i: 5;">
+            <div class="menu-item" onclick="selectRadialItem('cuahang')">
+                <i class="fa-solid fa-cart-shopping"></i><span>CỬA HÀNG</span>
+            </div>
+        </div>
+        <div class="menu-item-wrapper" style="--i: 6;">
+            <div class="menu-item" onclick="selectRadialItem('bangxephang')">
+                <i class="fa-solid fa-ranking-star"></i><span>BẢNG XẾP HẠNG</span>
+            </div>
+        </div>
+        <div class="menu-item-wrapper" style="--i: 7;">
+            <div class="menu-item" onclick="selectRadialItem('giayphep')">
+                <i class="fa-solid fa-id-card"></i><span>GIẤY PHÉP</span>
+            </div>
+        </div>
+        <div class="menu-item-wrapper" style="--i: 8;">
+            <div class="menu-item" onclick="selectRadialItem('timduong')">
+                <i class="fa-solid fa-map-location-dot"></i><span>TÌM ĐƯỜNG</span>
+            </div>
+        </div>
+
+        <div class="menu-center-btn" onclick="closeRadialMenu()">
+            CLOSE
+        </div>
+    </div>
 </div>
 
 
