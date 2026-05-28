@@ -31,16 +31,24 @@
     // notify
     <div id="notify-container"></div>
   //hub
-<div id="hud-main" class="hud-container">
-  <div class="hud-row">
-    <img src="res/restaurant.png" class="hud-icon">
-    <div class="progress-track"><div id="hunger-bar" class="progress-fill"></div></div>
+<div class="game-hud-container">
+  <div class="hud-capsule">
+    <img src="res/restaurant.png" class="hud-icon" alt="Food">
+    <div class="hud-track">
+      <div id="hunger-bar" class="hud-fill" style="width: 100%;"></div>
+    </div>
+    <span id="hunger-text" class="hud-text">100%</span>
   </div>
-  <div class="hud-row">
-    <img src="res/water.png" class="hud-icon">
-    <div class="progress-track"><div id="water-bar" class="progress-fill"></div></div>
+
+  <div class="hud-capsule">
+    <img src="res/water.png" class="hud-icon" alt="Water">
+    <div class="hud-track">
+      <div id="water-bar" class="hud-fill" style="width: 100%;"></div>
+    </div>
+    <span id="water-text" class="hud-text">100%</span>
   </div>
 </div>
+
 
     <script src="script.js"></script>
     <script src="hunger.js"></script>
