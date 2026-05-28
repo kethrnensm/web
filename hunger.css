@@ -24,11 +24,13 @@
 }
 
 /* Thanh fill bên trong */
-.progress-fill {
+..progress-fill {
+  width: 100%; /* Chỉnh thành 100% để hiển thị đầy */
   height: 100%;
+  background-color: #ff9f1a; /* Màu cam cho thức ăn */
   border-radius: 10px;
-  transition: width 0.4s ease;
 }
+
 
 /* Màu riêng biệt cho từng thanh */
 #hp-bar { background: #ff4d4d; }
