@@ -1,76 +1,36 @@
-body, html {
-    margin: 0; padding: 0; width: 100%; height: 100%;
-    background: transparent !important; overflow: hidden;
-    font-family: 'Inter', sans-serif; user-select: none;
+/* Căn chỉnh hàng */
+.hud-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
 }
 
-#player-hud-stats {
-    position: absolute; bottom: 80px; left: 15px;
-    width: 220px; /* Tăng chiều rộng một chút */
-    display: flex; flex-direction: column; gap: 8px;
-    z-index: 9999;
+/* Đặt kích thước cố định cho icon PNG */
+.hud-icon {
+  width: 40px; 
+  height: 40px;
+  object-fit: contain; /* Giữ tỷ lệ ảnh không bị méo */
 }
 
-.stat-bar-box {
-    display: flex; align-items: center;
-    /* Hiệu ứng kính mờ cao cấp hơn */
-    background: rgba(0, 0, 0, 0.4); 
-    padding: 6px 10px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(8px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    transition: all 0.3s ease;
+/* Khung chứa thanh tiến trình */
+.progress-track {
+  width: 200px;
+  height: 15px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
 }
 
-/* Nâng cấp Icon */
-.stat-icon {
-    font-size: 16px; /* Icon to hơn xíu */
-    width: 28px;
-    display: flex; justify-content: center; align-items: center;
-    /* Thêm hiệu ứng phát sáng cho icon */
-    filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
-}
-.icon-hunger { color: #ff9f43; } 
-.icon-thirst { color: #00d2d3; } 
-
-.stat-progress-bg {
-    flex: 1; height: 8px; /* Thanh dày hơn tí */
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 4px;
-    margin: 0 10px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.05);
+/* Thanh fill bên trong */
+.progress-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.4s ease;
 }
 
-.stat-progress-fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Hiệu ứng mượt hơn */
-}
-
-#bar-hunger {
-    background: linear-gradient(90deg, #ff9f43, #ff5252);
-    box-shadow: 0 0 10px rgba(255, 82, 82, 0.5);
-}
-#bar-thirst {
-    background: linear-gradient(90deg, #00d2d3, #0a3d62);
-    box-shadow: 0 0 10px rgba(0, 210, 211, 0.5);
-}
-
-.stat-value-text {
-    font-size: 12px;
-    font-weight: 700;
-    color: #fff;
-    min-width: 35px;
-    text-align: right;
-    text-shadow: 0 0 5px rgba(0,0,0,0.5);
-}
-
-/* Hiệu ứng báo động */
-@keyframes hud-blink-danger {
-    0% { background: rgba(0, 0, 0, 0.4); }
-    50% { background: rgba(231, 76, 60, 0.4); border-color: rgba(231, 76, 60, 0.5); }
-    100% { background: rgba(0, 0, 0, 0.4); }
-}
-.bar-danger { animation: hud-blink-danger 1s infinite ease-in-out; }
+/* Màu riêng biệt cho từng thanh */
+#hp-bar { background: #ff4d4d; }
+#hunger-bar { background: #ff9f1a; }
+#water-bar { background: #3498db; }
