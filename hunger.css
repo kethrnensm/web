@@ -1,42 +1,65 @@
-.hud-container {
+/* Container đặt ở góc dưới bên trái màn hình, né bản đồ */
+.game-hud-container {
   position: absolute;
-  top: 30px; 
-  left: 30px;
-  background: rgba(0, 0, 0, 0.4);
-  padding: 15px;
-  border-radius: 12px;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  bottom: 45px; /* Khoảng cách từ đáy màn hình lên */
+  left: 25px;   /* Khoảng cách từ mép trái màn hình vào */
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;    /* Khoảng cách giữa thanh đói và thanh nước */
+  font-family: 'Arial', sans-serif;
+  z-index: 9999;
 }
 
-.hud-row {
+/* Hộp bọc ngoài hình viên thuốc */
+.hud-capsule {
   display: flex;
   align-items: center;
-  gap: 10px;
+  background: rgba(30, 30, 30, 0.7); /* Nền tối mờ vừa phải */
+  backdrop-filter: blur(4px);        /* Hiệu ứng kính mờ nhẹ */
+  padding: 8px 15px;
+  border-radius: 50px;               /* Bo tròn hoàn toàn hai đầu */
+  width: 240px;                      /* Độ dài tổng thể của thanh */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
 
+/* Định dạng Icon PNG */
 .hud-icon {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   object-fit: contain;
 }
 
-.progress-track {
-  width: 140px;
+/* Thanh rãnh nền tối bên trong */
+.hud-track {
+  flex: 1;
   height: 8px;
   background: rgba(0, 0, 0, 0.5);
-  border-radius: 4px;
+  border-radius: 10px;
+  margin: 0 12px;                  /* Khoảng cách giữa icon và chữ % */
   overflow: hidden;
 }
 
-.progress-fill {
-  width: 100%;
+/* Thanh màu tiến trình chạy mượt */
+.hud-fill {
   height: 100%;
-  border-radius: 4px;
-  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  
-#hunger-bar { background: #ff9f1a; }
-#water-bar { background: #3498db; }
+  border-radius: 10px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); /* Animation tụt thanh siêu mượt */
+}
+
+/* Màu sắc chuẩn theo ảnh mẫu */
+#hunger-bar {
+  background: #ff793f; /* Màu cam san hô của thanh đói */
+}
+
+#water-bar {
+  background: #00cec9; /* Màu xanh ngọc rực của thanh nước */
+}
+
+/* Chữ hiển thị phần trăm phía bên phải */
+.hud-text {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: bold;
+  min-width: 38px;
+  text-align: right;
+}
