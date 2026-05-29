@@ -1,140 +1,84 @@
 /* ==========================================================
-   LỚP PHỦ TOÀN MÀN HÌNH (OVERLAY)
+   CẤU HÌNH CỔNG KẾT NỐI CEF (CHỐNG LỖI SẬP SCRIPT TRÊN MOBILE)
    ========================================================== */
-.radial-overlay {
-    position: fixed;
-    top: 0; left: 0; 
-    width: 100vw; height: 100vh;
-    background: rgba(0, 0, 0, 0.6); /* Tăng độ tối lên một chút để nổi bật menu */
-    display: none; 
-    justify-content: center; 
-    align-items: center;
-    z-index: 10000;
-    
-    /* Chống bôi đen văn bản hoặc hiện khung chọn khi chạm nhanh trên điện thoại */
-    -webkit-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none;
+// Tự động nhận diện launcher dùng chữ hoa "Cef" hay chữ thường "cef"
+const SAMPCF = (typeof Cef !== 'undefined') ? Cef : ((typeof cef !== 'undefined') ? cef : null);
+
+if (!SAMPCF) {
+    console.warn("Cảnh báo: Không tìm thấy thư viện CEF của Launcher. Có thể đang chạy trên trình duyệt PC để test.");
 }
 
 /* ==========================================================
-   KHUNG CHỨA MENU TRÒN
+   HÀM ĐỒNG BỘ ĐÓNG/MỞ MENU TỪ SERVER PAWN
    ========================================================== */
-.radial-menu {
-    position: relative;
-    width: 350px; 
-    height: 350px;
-    display: flex; 
-    justify-content: center; 
-    align-items: center;
+function toggleRadialMenu(eventData) {
+    try {
+        console.log("-> [Radial Menu] Nhận lệnh toggle từ Pawn, Dữ liệu:", eventData);
+        
+        let isVisible = false;
+        
+        // Tự động xử lý nếu dữ liệu truyền về là chuỗi JSON hoặc mảng thuần
+        if (typeof eventData === 'string') {
+            const data = JSON.parse(eventData);
+            isVisible = data[0]; 
+        } else if (Array.isArray(eventData)) {
+            isVisible = eventData[0];
+        } else {
+            isVisible = !!eventData;
+        }
+        
+        const menu = document.getElementById('radialMenuOverlay');
+        if (menu) {
+            menu.style.display = isVisible ? 'flex' : 'none';
+            console.log("-> [Radial Menu] Trạng thái hiển thị hiện tại:", menu.style.display);
+        } else {
+            console.error("-> [Radial Menu] LỖI: Không tìm thấy thẻ HTML có id='radialMenuOverlay'");
+        }
+    } catch (e) {
+        console.error("-> [Radial Menu] Lỗi xử lý hàm toggleRadialMenu:", e);
+    }
+}
+// Đăng ký cổng nhận sự kiện mở từ Server SA-MP
+if (SAMPCF) {
+    SAMPCF.registerEventCallback("toggle_radial", "toggleRadialMenu");
 }
 
-/* Vòng nền đen và vạch chia ô */
-.radial-bg {
-    position: absolute;
-    top: 0; left: 0; 
-    width: 100%; height: 100%;
-    border-radius: 50%;
-    background: repeating-conic-gradient(
-        from 20deg,
-        rgba(255, 255, 255, 0.15) 0deg,      
-        rgba(255, 255, 255, 0.15) 2px,       
-        rgba(255, 255, 255, 0.0) 2px, /* Sửa lại vạch chia cho sắc nét hơn */
-        rgba(15, 15, 18, 0.98) 2px,         
-        rgba(15, 15, 18, 0.98) 40deg        
-    );
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-    z-index: 1;           
-    pointer-events: none; /* Tuyệt đối không chặn click */
-}
-
-/* Khung định vị trí xoay cho từng ô */
-.menu-item-wrapper {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: rotate(calc(var(--i) * 40deg)) translateY(-115px);
-    z-index: 10; 
-}
 
 /* ==========================================================
-   CÁC Ô TÍNH NĂNG (BUTTON / DIV)
+   HÀM XỬ LÝ KHI BẤM NÚT "CLOSE" Ở GIỮA
    ========================================================== */
-.menu-item {
-    transform: rotate(calc(var(--i) * -40deg));
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center;
-    width: 80px; height: 80px;
-    margin-top: -40px; margin-left: -40px; 
-    cursor: pointer;
-    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    pointer-events: auto; 
+function closeRadialMenu() {
+    console.log("-> [Radial Menu] Người chơi đã click nút [CLOSE]");
     
-    /* Reset thuộc tính nếu bạn dùng thẻ <button> */
-    background: transparent;
-    border: none;
-    outline: none;
-    padding: 0;
-    -webkit-tap-highlight-color: transparent; /* Xóa khung viền xanh mặc định của Android khi tap */
+    // 1. Ẩn menu ngay lập tức trên màn hình
+    const menu = document.getElementById('radialMenuOverlay');
+    if (menu) {
+        menu.style.display = 'none';
+    }
+    
+    // 2. Gửi sự kiện báo cho file Pawn biết menu đã đóng
+    if (SAMPCF) {
+        SAMPCF.sendEvent("radial_closed", "[]"); 
+        console.log("-> [Radial Menu] Đã gửi sự kiện 'radial_closed' về Pawn.");
+    }
 }
 
-.menu-item i {
-    color: #00cec9; 
-    font-size: 24px;
-    margin-bottom: 6px;
-    transition: color 0.2s, text-shadow 0.2s;
-}
-
-.menu-item span {
-    color: #ffffff;
-    font-family: 'Arial', sans-serif;
-    font-size: 9px;
-    font-weight: bold;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Hiệu ứng khi Hover chuột (PC) hoặc Chạm tay vào (Mobile) */
-.menu-item:hover, .menu-item:active {
-    transform: rotate(calc(var(--i) * -40deg)) scale(1.15); 
-}
-.menu-item:hover i, .menu-item:active i {
-    color: #ffffff;
-    text-shadow: 0 0 12px #00cec9;
-}
 
 /* ==========================================================
-   NÚT CLOSE Ở TÂM VÒNG TRÒN
+   HÀM XỬ LÝ KHI BẤM CHỌN CÁC Ô TÍNH NĂNG (BALO, THÔNG TIN...)
    ========================================================== */
-.menu-center-btn {
-    position: absolute;
-    width: 85px; height: 85px;
-    border-radius: 50%;
-    color: #00cec9;
-    font-family: 'Arial', sans-serif;
-    font-size: 13px;
-    font-weight: bold;
-    display: flex; 
-    justify-content: center; 
-    align-items: center;
-    cursor: pointer;
-    box-shadow: 0 0 15px rgba(0, 206, 201, 0.2) inset, 0 0 10px rgba(0,0,0,0.5);
-    transition: all 0.2s ease;
-    z-index: 20; 
+function selectRadialItem(actionName) {
+    console.log(`-> [Radial Menu] Người chơi đã click chọn ô: [${actionName.toUpperCase()}]`);
     
-    /* Reset thuộc tính nếu dùng <button> */
-    background: #1a1a1e;
-    border: 2px solid #00cec9;
-    outline: none;
-    padding: 0;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.menu-center-btn:hover, .menu-center-btn:active {
-    background: #00cec9;
-    color: #1a1a1e;
-    box-shadow: 0 0 25px #00cec9;
-    transform: scale(1.05);
+    // 1. Ẩn menu ngay lập tức để tránh đè giao diện
+    const menu = document.getElementById('radialMenuOverlay');
+    if (menu) {
+        menu.style.display = 'none';
+    }
+    
+    // 2. Gửi dữ liệu lựa chọn về cho hệ thống Pawn xử lý
+    if (SAMPCF) {
+        SAMPCF.sendEvent("radial_action", `["${actionName}"]`);
+        console.log(`-> [Radial Menu] Đã gửi radial_action với tham số ["${actionName}"] về Pawn.`);
+    }
 }
