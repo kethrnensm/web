@@ -18,6 +18,7 @@
 </head>
 <body>
 
+    <!-- ALERT OVERLAY -->
     <div id="alert-overlay" class="hidden">
         <div class="alert-box">
             <div class="alert-content">
@@ -32,8 +33,10 @@
         </div>
     </div>
 
+    <!-- NOTIFICATION CONTAINER -->
     <div id="notify-container"></div>
 
+    <!-- GAME HUD CONTAINER -->
     <div class="game-hud-container">
         <div class="hud-capsule">
             <img src="res/restaurant.png" class="hud-icon" alt="Food">
@@ -52,62 +55,64 @@
         </div>
     </div>
 
+    <!-- RADIAL MENU OVERLAY (ĐÃ CHỈNH SỬA SANG BUTTON & ĐỘC LẬP CLICK) -->
     <div class="radial-overlay" id="radialMenuOverlay" style="display: none;">
         <div class="radial-menu">
             <div class="radial-bg"></div>
 
             <div class="menu-item-wrapper" style="--i: 0;">
-                <div class="menu-item" onclick="selectRadialItem('thongtin')" ontouchstart="selectRadialItem('thongtin')">
+                <button class="menu-item" onclick="selectRadialItem('thongtin')">
                     <i class="fa-solid fa-user"></i><span>THÔNG TIN</span>
-                </div>
+                </button>
             </div>
             <div class="menu-item-wrapper" style="--i: 1;">
-                <div class="menu-item" onclick="selectRadialItem('balo')" ontouchstart="selectRadialItem('balo')">
+                <button class="menu-item" onclick="selectRadialItem('balo')">
                     <i class="fa-solid fa-briefcase"></i><span>BALO</span>
-                </div>
+                </button>
             </div>
             <div class="menu-item-wrapper" style="--i: 2;">
-                <div class="menu-item" onclick="selectRadialItem('khoxe')" ontouchstart="selectRadialItem('khoxe')">
+                <button class="menu-item" onclick="selectRadialItem('khoxe')">
                     <i class="fa-solid fa-car"></i><span>KHO XE</span>
-                </div>
+                </button>
             </div>
             <div class="menu-item-wrapper" style="--i: 3;">
-                <div class="menu-item" onclick="selectRadialItem('congviec')" ontouchstart="selectRadialItem('congviec')">
+                <button class="menu-item" onclick="selectRadialItem('congviec')">
                     <i class="fa-solid fa-clipboard-user"></i><span>CÔNG VIỆC</span>
-                </div>
+                </button>
             </div>
             <div class="menu-item-wrapper" style="--i: 4;">
-                <div class="menu-item" onclick="selectRadialItem('diemdanh')" ontouchstart="selectRadialItem('diemdanh')">
+                <button class="menu-item" onclick="selectRadialItem('diemdanh')">
                     <i class="fa-solid fa-calendar-check"></i><span>ĐIỂM DANH</span>
-                </div>
+                </button>
             </div>
             <div class="menu-item-wrapper" style="--i: 5;">
-                <div class="menu-item" onclick="selectRadialItem('cuahang')" ontouchstart="selectRadialItem('cuahang')">
+                <button class="menu-item" onclick="selectRadialItem('cuahang')">
                     <i class="fa-solid fa-cart-shopping"></i><span>CỬA HÀNG</span>
-                </div>
+                </button>
             </div>
             <div class="menu-item-wrapper" style="--i: 6;">
-                <div class="menu-item" onclick="selectRadialItem('bangxephang')" ontouchstart="selectRadialItem('bangxephang')">
+                <button class="menu-item" onclick="selectRadialItem('bangxephang')">
                     <i class="fa-solid fa-ranking-star"></i><span>BẢNG XẾP HẠNG</span>
-                </div>
+                </button>
             </div>
             <div class="menu-item-wrapper" style="--i: 7;">
-                <div class="menu-item" onclick="selectRadialItem('giayphep')" ontouchstart="selectRadialItem('giayphep')">
+                <button class="menu-item" onclick="selectRadialItem('giayphep')">
                     <i class="fa-solid fa-id-card"></i><span>GIẤY PHÉP</span>
-                </div>
+                </button>
             </div>
             <div class="menu-item-wrapper" style="--i: 8;">
-                <div class="menu-item" onclick="selectRadialItem('timduong')" ontouchstart="selectRadialItem('timduong')">
+                <button class="menu-item" onclick="selectRadialItem('timduong')">
                     <i class="fa-solid fa-map-location-dot"></i><span>TÌM ĐƯỜNG</span>
-                </div>
+                </button>
             </div>
 
-            <div class="menu-center-btn" onclick="closeRadialMenu()" ontouchstart="closeRadialMenu()">
+            <button class="menu-center-btn" onclick="closeRadialMenu()">
                 CLOSE
-            </div>
+            </button>
         </div>
     </div>
     
+    <!-- INVENTORY WRAPPER -->
     <div class="inventory-wrapper" id="inventory-wrapper" style="display: none;">
         <div class="left-panel">
             <div class="header">
@@ -141,6 +146,7 @@
         </div>
     </div>
 
+    <!-- JAVASCRIPT INCLUDES -->
     <script src="script.js"></script>
     <script src="hunger.js"></script>
     <script src="menu.js"></script>
