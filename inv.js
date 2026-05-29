@@ -2,11 +2,11 @@
 // CẤU HÌNH HÌNH ẢNH VÀ BIẾN TOÀN CỤC
 // ==========================================================
 const itemImages = {
-    1: 'assets/food.png',    // Thức ăn
-    2: 'assets/water.png',   // Nước uống
-    3: 'assets/radio.png',   // Hoạt động
-    4: 'assets/candy.png',   // Kẹo táo
-    5: 'assets/bandage.png'  // Băng gạc
+    1: 'res/food.png',    // Thức ăn
+    2: 'res/water.png',   // Nước uống
+    3: 'res/radio.png',   // Hoạt động
+    4: 'res/candy.png',   // Kẹo táo
+    5: 'res/bandage.png'  // Băng gạc
 };
 
 let currentData = [];   // Lưu trữ danh sách vật phẩm từ Server Pawn gửi sang
