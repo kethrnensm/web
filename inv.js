@@ -1,41 +1,62 @@
 // Cấu hình đường dẫn hình ảnh vật phẩm tương ứng với ID khai báo trong Pawn
 const itemImages = {
-    1: 'res/food.png',    // Thức ăn
-    2: 'res/water.png',   // Nước uống
-    3: 'res/radio.png',   // Hoạt động
-    4: 'res/candy.png',   // Kẹo táo
-    5: 'res/bandage.png'  // Băng gạc
+    1: 'assets/food.png',    // Thức ăn
+    2: 'assets/water.png',   // Nước uống
+    3: 'assets/radio.png',   // Hoạt động
+    4: 'assets/candy.png',   // Kẹo táo
+    5: 'assets/bandage.png'  // Băng gạc
 };
 
 let currentData = [];
 let selectedSlot = -1;
 
-// 1. LẮNG NGHE SỰ KIỆN TỪ GAME (PAWN) GỬI SANG
-if (typeof cef !== 'undefined') {
-    cef.on("render_inventory", (jsonString) => {
-        // Hiện giao diện lên màn hình
-        document.getElementById('inventory-body').style.display = 'block';
-        // Giải mã chuỗi dữ liệu JSON nhận được từ Server thành mảng
-        currentData = JSON.parse(jsonString);
-        // Tiến hành vẽ lưới vật phẩm
+/* ==========================================================
+   1. LẮNG NGHE SỰ KIỆN TỪ GAME (PAWN -> JS)
+   ========================================================== */
+
+// Hàm nhận dữ liệu hiển thị Balo từ máy chủ Pawn
+function renderInventoryEvent(eventData) {
+    try {
+        // Parse dữ liệu gửi từ máy chủ
+        const data = JSON.parse(eventData);
+        
+        // Vì Pawn xuất ra định dạng JSON Array chứa các Object [{slot:0,...}, {slot:1,...}]
+        // Tùy thuộc cấu trúc gói tin, nếu Cef tự bọc mảng ngoài cùng thì ta lấy data[0]
+        currentData = Array.isArray(data) && Array.isArray(data[0]) ? data[0] : data;
+        
+        // Mở giao diện Balo
+        const inventoryBody = document.getElementById('inventory-body');
+        if (inventoryBody) {
+            inventoryBody.style.display = 'block';
+        }
+        
+        // Bắt đầu vẽ các ô đồ
         renderInventory();
-    });
+    } catch (e) {
+        console.error("Lỗi khi đồng bộ Inventory Menu:", e);
+    }
 }
 
-// 2. HÀM DỰNG (RENDER) LƯỚI TÚI ĐỒ VÀ CÁC SLOT
+// Đăng ký cổng nhận sự kiện mở từ Server SA-MP
+if (typeof Cef !== 'undefined') {
+    Cef.registerEventCallback("render_inventory", "renderInventoryEvent");
+}
+
+
+/* ==========================================================
+   2. HÀM DỰNG (RENDER) LƯỚI TÚI ĐỒ VÀ CÁC SLOT
+   ========================================================== */
 function renderInventory() {
     const grid = document.getElementById('grid-container');
-    grid.innerHTML = ''; // Xóa sạch dữ liệu cũ trước khi vẽ lại
+    if (!grid) return;
+    
+    grid.innerHTML = ''; 
 
     currentData.forEach(item => {
         const slotDiv = document.createElement('div');
-        // Nếu slot này đang được chọn thì kích hoạt class "active" (đổi màu viền)
         slotDiv.className = 'item-slot' + (selectedSlot === item.slot ? ' active' : '');
-        
-        // Sự kiện khi người chơi nhấp chọn ô đồ này
         slotDiv.onclick = () => selectItem(item.slot);
 
-        // Kiểm tra nếu ID > 0 (tức là ô có chứa vật phẩm)
         if (item.id !== 0) {
             const imgSrc = itemImages[item.id] || 'assets/default.png';
             slotDiv.innerHTML = `
@@ -47,50 +68,60 @@ function renderInventory() {
         grid.appendChild(slotDiv);
     });
 
-    // Cập nhật lại thông số hiển thị bảng thông tin chi tiết bên phải
     updateRightPanel();
 }
 
-// 3. HÀM CHỌN VẬT PHẨM
+// Hàm xử lý chọn ô đồ
 function selectItem(slotIndex) {
     selectedSlot = slotIndex;
-    renderInventory(); // Gọi lại hàm render để cập nhật viền sáng xanh ngọc cho ô được chọn
+    renderInventory(); 
 }
 
-// 4. HÀM CẬP NHẬT THÔNG TIN CHI TIẾT VẬT PHẨM BẢNG PHẢI
+// Hàm cập nhật khung chi tiết vật phẩm
 function updateRightPanel() {
     const rightPanel = document.getElementById('right-panel');
     const item = currentData.find(i => i.slot === selectedSlot);
 
-    // Nếu chọn trúng ô có đồ
     if (item && item.id !== 0) {
-        rightPanel.style.visibility = 'visible'; // Hiện bảng lên
+        rightPanel.style.visibility = 'visible'; 
         document.getElementById('detail-name').innerText = item.name;
         document.getElementById('detail-desc').innerText = `Vật phẩm: ${item.name} | Số lượng hiện có: ${item.count}`;
         document.getElementById('detail-img').src = itemImages[item.id] || 'assets/default.png';
     } else {
-        rightPanel.style.visibility = 'hidden'; // Nếu bấm vào ô trống thì tự động ẩn bảng phải
+        rightPanel.style.visibility = 'hidden'; 
     }
 }
 
-// 5. HÀM GỬI LỆNH TƯƠNG TÁC VỀ LẠI SERVER (PAWN)
+
+/* ==========================================================
+   3. HÀM GỬI LỆNH TƯƠNG TÁC VỀ LẠI SERVER (JS -> PAWN)
+   ========================================================== */
 function actionItem(eventName) {
     if (selectedSlot === -1) return;
     
-    if (typeof cef !== 'undefined') {
-        // Gửi ID của slot đang tương tác về cho callback OnCefEvent xử lý tiếp
-        cef.emit(eventName, selectedSlot.toString());
+    if (typeof Cef !== 'undefined') {
+        // Gửi dữ liệu lựa chọn về cho hệ thống Pawn xử lý
+        // Đóng gói slot dưới dạng mảng JSON theo đúng API của bạn (ví dụ: '["0"]')
+        Cef.sendEvent(eventName, `["${selectedSlot}"]`);
     } else {
-        // Log ra màn hình Console F12 để bạn dễ dàng debug khi test trên trình duyệt PC
-        console.log(`[TEST MODE] Đã gửi sự kiện: ${eventName} | Tại ô Slot số: ${selectedSlot}`);
+        console.log(`[TEST MODE] Gọi sự kiện: ${eventName} tại Slot: ${selectedSlot}`);
     }
 }
 
-// 6. HÀM ĐÓNG GIAO DIỆN
+
+/* ==========================================================
+   4. HÀM ĐÓNG GIAO DIỆN
+   ========================================================== */
 function closeInventory() {
-    document.getElementById('inventory-body').style.display = 'none';
-    selectedSlot = -1; // Reset lại ô chọn về mặc định
-    if (typeof cef !== 'undefined') {
-        cef.emit("inv_close");
+    const inventoryBody = document.getElementById('inventory-body');
+    if (inventoryBody) {
+        inventoryBody.style.display = 'none';
+    }
+    
+    selectedSlot = -1; // Reset trạng thái chọn
+    
+    if (typeof Cef !== 'undefined') {
+        // Gửi sự kiện báo cho file Pawn biết Balo đã đóng để tắt chuột
+        Cef.sendEvent("inv_close", "[]");
     }
 }
