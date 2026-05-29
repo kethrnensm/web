@@ -1,0 +1,246 @@
+/* === THIẾT LẬP CHUNG === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    user-select: none;
+}
+
+body {
+    background: transparent;
+    overflow: hidden;
+    color: white;
+    display: none; /* Mặc định ẩn, Pawn gọi mới hiện lên */
+}
+
+/* === KHUNG BAO BỌC CHÍNH === */
+.inventory-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100vw;
+    height: 100vh;
+    padding: 5% 10%;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+/* === BẢNG TRÁI (KHUNG LƯỚI GRID) === */
+.left-panel {
+    width: 55%;
+    background: rgba(8, 13, 22, 0.95);
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    position: relative;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.close-btn {
+    background: transparent;
+    color: #555;
+    font-size: 20px;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.close-btn:hover {
+    color: white;
+}
+
+.sub-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #00cec9;
+    margin-bottom: 20px;
+}
+
+.sub-header .category {
+    color: #00cec9;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.sub-header .capacity {
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Cấu trúc lưới item 5 cột */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+}
+
+.item-slot {
+    aspect-ratio: 1 / 1;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 5px;
+    transition: 0.2s;
+}
+
+/* Ô được chọn sẽ đổi viền xanh ngọc */
+.item-slot.active {
+    border: 1px solid #00cec9;
+    background: rgba(0, 206, 201, 0.1);
+}
+
+.item-slot:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.item-slot img {
+    width: 60%;
+    max-height: 50%;
+    object-fit: contain;
+    margin-bottom: auto;
+    margin-top: 10px;
+}
+
+.item-slot .count {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: #00cec9;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.item-slot .name {
+    font-size: 10px;
+    color: #ccc;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+/* === BẢNG PHẢI (CHI TIẾT VÀ NÚT BẤM) === */
+.right-panel {
+    width: 25%;
+    background: rgba(8, 13, 22, 0.95);
+    padding: 20px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    visibility: hidden; /* Ẩn đi khi chưa click chọn vật phẩm */
+}
+
+.item-preview {
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(0, 100, 255, 0.2) 0%, transparent 70%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.item-preview img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+}
+
+.right-panel h2 {
+    font-size: 26px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.right-panel .rarity {
+    color: #00cec9;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+}
+
+.right-panel .desc {
+    color: #888;
+    font-size: 13px;
+    text-align: center;
+    margin-bottom: auto;
+    padding-bottom: 30px;
+}
+
+/* Hệ thống nút bấm hành động */
+.action-btns {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-use {
+    background: #00cec9;
+    color: black;
+}
+
+.btn-use:hover {
+    background: #01e3dd;
+}
+
+.btn-trade {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-trade:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-delete {
+    background: rgba(255, 0, 0, 0.1);
+    color: #ff4757;
+}
+
+.btn-delete:hover {
+    background: rgba(255, 0, 0, 0.2);
+}
