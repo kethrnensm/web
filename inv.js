@@ -1,10 +1,10 @@
 // Cấu hình đường dẫn hình ảnh vật phẩm tương ứng với ID khai báo trong Pawn
 const itemImages = {
-    1: 'assets/food.png',    // Thức ăn
-    2: 'assets/water.png',   // Nước uống
-    3: 'assets/radio.png',   // Hoạt động
-    4: 'assets/candy.png',   // Kẹo táo
-    5: 'assets/bandage.png'  // Băng gạc
+    1: 'res/food.png',    // Thức ăn
+    2: 'res/water.png',   // Nước uống
+    3: 'res/radio.png',   // Hoạt động
+    4: 'res/candy.png',   // Kẹo táo
+    5: 'res/bandage.png'  // Băng gạc
 };
 
 let currentData = [];
