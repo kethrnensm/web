@@ -1,13 +1,28 @@
 /* ==========================================================
-   KHUNG CHỨA MENU TRÒN (KHÔNG ĐỔI)
+   LỚP PHỦ TOÀN MÀN HÌNH (OVERLAY)
+   ========================================================== */
+.radial-overlay {
+    position: fixed;
+    top: 0; left: 0; 
+    width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    display: none; 
+    justify-content: center; 
+    align-items: center;
+    z-index: 10000;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+
+/* ==========================================================
+   KHUNG CHỨA MENU TRÒN
    ========================================================== */
 .radial-menu {
     position: relative;
     width: 350px; 
     height: 350px;
-    display: flex; 
-    justify-content: center; 
-    align-items: center;
+    /* Gỡ bỏ flex-center ở đây để tránh làm lệch tọa độ chuột của CEF */
 }
 
 .radial-bg {
@@ -29,39 +44,38 @@
 }
 
 /* ==========================================================
-   KHUNG BỌC NGOÀI (ĐÃ FIX - TẠO HIT-BOX VẬT LÝ)
+   KHUNG BỌC NGOÀI (XOAY TOÀN KHUNG - THAY ĐỔI CHÍNH Ở ĐÂY)
    ========================================================== */
 .menu-item-wrapper {
     position: absolute;
-    top: 50%; left: 50%;
-    
-    /* CHUYỂN KÍCH THƯỚC VÀ CĂN GIỮA TỪ MENU-ITEM LÊN ĐÂY */
-    width: 80px; height: 80px;
-    margin-top: -40px; margin-left: -40px; 
-    
-    transform: rotate(calc(var(--i) * 40deg)) translateY(-115px);
+    top: 0; left: 0;
+    width: 100%; height: 100%; /* Ép bằng đúng kích thước menu 350x350 */
+    transform: rotate(calc(var(--i) * 40deg)); /* Xoay cả khung quanh tâm chuẩn */
     z-index: 10; 
+    pointer-events: none; /* Khung ảo tàng hình, không cản chuột bấm nút CLOSE */
 }
 
 /* ==========================================================
-   CÁC Ô TÍNH NĂNG / BUTTON (ĐÃ FIX)
+   CÁC Ô TÍNH NĂNG (BUTTON)
    ========================================================== */
 .menu-item {
-    transform: rotate(calc(var(--i) * -40deg));
+    position: absolute;
+    top: 20px; /* Đẩy nút ra rìa menu bằng tọa độ cứng (thay cho translateY) */
+    left: 50%;
+    margin-left: -40px; /* Căn giữa chính xác cho nút rộng 80px */
+    width: 80px; height: 80px;
+    
+    transform: rotate(calc(var(--i) * -40deg)); /* Xoay ngược góc để chữ/icon luôn thẳng đứng */
+    
     display: flex; 
     flex-direction: column; 
     align-items: center; 
     justify-content: center;
-    
-    /* CHUYỂN KÍCH THƯỚC THÀNH 100% ĐỂ LẤY KÍCH THƯỚC CỦA WRAPPER TRÊN */
-    width: 100%; height: 100%; 
-    
     cursor: pointer;
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    pointer-events: auto; 
     
-    /* DÙNG TRICK CEF: NỀN TRONG SUỐT 1% ĐỂ BẮT CLICK */
-    background: rgba(255, 255, 255, 0.01);
+    pointer-events: auto; /* Bật lại tính năng click riêng cho nút này */
+    background: rgba(255, 255, 255, 0.01); /* Trick nền 1% chống lỗi hụt click của CEF */
     
     border: none;
     outline: none;
@@ -92,4 +106,39 @@
 .menu-item:hover i, .menu-item:active i {
     color: #ffffff;
     text-shadow: 0 0 12px #00cec9;
+}
+
+/* ==========================================================
+   NÚT CLOSE Ở TÂM (Đã fix tọa độ pixel độc lập)
+   ========================================================== */
+.menu-center-btn {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 85px; height: 85px;
+    margin-top: -42.5px; margin-left: -42.5px; /* Căn giữa tuyệt đối bằng pixel */
+    border-radius: 50%;
+    color: #00cec9;
+    font-family: 'Arial', sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(0, 206, 201, 0.2) inset, 0 0 10px rgba(0,0,0,0.5);
+    transition: all 0.2s ease;
+    z-index: 20; 
+    background: #1a1a1e;
+    border: 2px solid #00cec9;
+    outline: none;
+    padding: 0;
+    pointer-events: auto; /* Ép nhận tương tác chuột */
+    -webkit-tap-highlight-color: transparent;
+}
+
+.menu-center-btn:hover, .menu-center-btn:active {
+    background: #00cec9;
+    color: #1a1a1e;
+    box-shadow: 0 0 25px #00cec9;
+    transform: scale(1.05);
 }
