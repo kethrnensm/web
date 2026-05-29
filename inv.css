@@ -11,18 +11,22 @@ body {
     background: transparent;
     overflow: hidden;
     color: white;
-    display: none; /* Mặc định ẩn, Pawn gọi mới hiện lên */
+    /* Không để display: none ở body để không làm ẩn HUD game */
 }
 
-/* === KHUNG BAO BỌC CHÍNH === */
+/* === KHUNG BAO BỌC CHÍNH (Đã fix hiển thị) === */
 .inventory-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    display: none; /* Mặc định ẩn, chỉ hiện khi JS gọi */
+    justify-content: center;
+    align-items: center;
     width: 100vw;
     height: 100vh;
     padding: 5% 10%;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.6);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
 }
 
 /* === BẢNG TRÁI (KHUNG LƯỚI GRID) === */
@@ -33,6 +37,7 @@ body {
     border-radius: 5px;
     box-shadow: 0 0 15px rgba(0,0,0,0.5);
     position: relative;
+    margin-right: 20px;
 }
 
 .header {
@@ -89,6 +94,8 @@ body {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 8px;
+    max-height: 400px;
+    overflow-y: auto;
 }
 
 .item-slot {
@@ -106,7 +113,6 @@ body {
     transition: 0.2s;
 }
 
-/* Ô được chọn sẽ đổi viền xanh ngọc */
 .item-slot.active {
     border: 1px solid #00cec9;
     background: rgba(0, 206, 201, 0.1);
@@ -152,7 +158,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    visibility: hidden; /* Ẩn đi khi chưa click chọn vật phẩm */
+    visibility: hidden; /* Mặc định ẩn */
 }
 
 .item-preview {
@@ -194,7 +200,7 @@ body {
     padding-bottom: 30px;
 }
 
-/* Hệ thống nút bấm hành động */
+/* Hệ thống nút bấm */
 .action-btns {
     width: 100%;
     display: flex;
@@ -217,30 +223,9 @@ body {
     gap: 8px;
 }
 
-.btn-use {
-    background: #00cec9;
-    color: black;
-}
-
-.btn-use:hover {
-    background: #01e3dd;
-}
-
-.btn-trade {
-    background: rgba(255, 255, 255, 0.05);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.btn-trade:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.btn-delete {
-    background: rgba(255, 0, 0, 0.1);
-    color: #ff4757;
-}
-
-.btn-delete:hover {
-    background: rgba(255, 0, 0, 0.2);
-}
+.btn-use { background: #00cec9; color: black; }
+.btn-use:hover { background: #01e3dd; }
+.btn-trade { background: rgba(255, 255, 255, 0.05); color: white; border: 1px solid rgba(255, 255, 255, 0.1); }
+.btn-trade:hover { background: rgba(255, 255, 255, 0.1); }
+.btn-delete { background: rgba(255, 0, 0, 0.1); color: #ff4757; }
+.btn-delete:hover { background: rgba(255, 0, 0, 0.2); }
