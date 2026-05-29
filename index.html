@@ -31,9 +31,7 @@
             </div>
         </div>
     </div>
-    // notify
     <div id="notify-container"></div>
-  //hub
 <div class="game-hud-container">
   <div class="hud-capsule">
     <img src="res/restaurant.png" class="hud-icon" alt="Food">
@@ -51,7 +49,6 @@
     <span id="water-text" class="hud-text">100%</span>
   </div>
 </div>
-    //menu
       <div class="radial-overlay" id="radialMenuOverlay" style="display: none;">
         <div class="radial-menu">
             <div class="radial-bg"></div>
@@ -107,6 +104,35 @@
             </div>
         </div>
       </div>
+     <div class="inventory-wrapper">
+        <div class="left-panel">
+            <div class="header">
+                <h1>TÚI ĐỒ CÁ NHÂN</h1>
+                <button class="close-btn" onclick="closeInventory()">✖</button>
+            </div>
+            <div class="sub-header">
+                <span class="category">TACTICAL EQUIPMENT</span>
+                <span class="capacity">BALO LV.0 - 9 SLOT</span>
+            </div>
+            <div class="grid-container" id="grid-container">
+                </div>
+        </div>
+         
+        <div class="right-panel" id="right-panel">
+            <div class="item-preview">
+                <img id="detail-img" src="" alt="Preview">
+            </div>
+            <h2 id="detail-name">TÊN VẬT PHẨM</h2>
+            <span class="rarity">RARE</span>
+            <p class="desc" id="detail-desc">Mô tả vật phẩm hiện tại...</p>
+            
+            <div class="action-btns">
+                <button class="btn btn-use" onclick="actionItem('inv_use_item')">⚡ SỬ DỤNG</button>
+                <button class="btn btn-trade" onclick="actionItem('inv_trade_item')">🤝 GIAO DỊCH</button>
+                <button class="btn btn-delete" onclick="actionItem('inv_delete_item')">🗑 XOÁ</button>
+            </div>
+        </div>
+     </div>
     <script src="script.js"></script>
     <script src="hunger.js"></script>
     <script src="menu.js"></script>
