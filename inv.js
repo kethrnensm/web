@@ -19,8 +19,6 @@ let lastTapTime = 0;
 function initCefInventory() {
     Cef.registerEventCallback("render_inventory", "renderInventoryEvent");
     Cef.registerEventCallback("toggle_inventory", "toggleInventoryEvent");
-    
-    // Đăng ký nhận sự kiện cập nhật cân nặng từ Pawn gửi về
     Cef.registerEventCallback("update_inventory_weight", "updateWeightEvent");
     
     console.log("[CEF Mobile] Hệ thống Balo đã sẵn sàng!");
@@ -44,19 +42,16 @@ function toggleInventoryEvent(eventData) {
     if (!isVisible) selectedSlot = -1;
 }
 
-// Hàm mới xử lý cân nặng Balo
 function updateWeightEvent(eventData) {
     try {
         const data = JSON.parse(eventData);
         const currentWeight = data[0];
         const maxWeight = data[1];
         
-        // Tìm thẻ hiển thị cân nặng trên HTML (Bạn cần thêm thẻ id="inventory-weight" vào HTML)
         const weightDisplay = document.getElementById('inventory-weight');
         if (weightDisplay) {
             weightDisplay.innerText = `Cân nặng: ${currentWeight.toFixed(2)} / ${maxWeight.toFixed(2)} kg`;
             
-            // Nếu Balo đầy/quá tải, chữ sẽ đổi sang màu đỏ để cảnh báo
             if (currentWeight >= maxWeight) {
                 weightDisplay.style.color = "#ff5252"; 
             } else {
@@ -77,7 +72,10 @@ function renderInventory() {
     currentData.forEach(item => {
         const slotDiv = document.createElement('div');
         slotDiv.className = 'item-slot' + (selectedSlot === item.slot ? ' active' : '');
-        slotDiv.addEventListener('touchend', (e) => { e.preventDefault(); handleSlotTouch(item.slot); });
+        slotDiv.addEventListener('touchend', (e) => { 
+            e.preventDefault(); 
+            handleSlotTouch(item.slot); 
+        });
         
         if (item.id !== 0) {
             slotDiv.innerHTML = `<span class="count">x${item.count}</span><img src="${itemImages[item.id] || 'assets/default.png'}" draggable="false"><span class="name">${item.name}</span>`;
@@ -89,36 +87,59 @@ function renderInventory() {
 
 function handleSlotTouch(slotIndex) {
     const item = currentData.find(i => i.slot === slotIndex);
-    if (!item || item.id === 0) { selectedSlot = slotIndex; renderInventory(); return; }
+    if (!item || item.id === 0) { 
+        selectedSlot = slotIndex; 
+        renderInventory(); 
+        return; 
+    }
 
     const currentTime = new Date().getTime();
-    if (selectedSlot === slotIndex && (currentTime - lastTapTime) < 300) actionItem('inv_use_item');
-    else { selectedSlot = slotIndex; renderInventory(); }
+    
+    // Nhấp đúp (Double tap): Chạm 2 lần dưới 300ms sẽ kích hoạt sử dụng đồ
+    if (selectedSlot === slotIndex && (currentTime - lastTapTime) < 300) {
+        actionItem('inv_use_item');
+    } else { 
+        selectedSlot = slotIndex; 
+        renderInventory(); 
+    }
     lastTapTime = currentTime;
 }
 
 function updateRightPanel() {
     const rightPanel = document.getElementById('right-panel');
+    if (!rightPanel) return; // Đã thêm: Tránh báo lỗi nếu HTML chưa có thẻ right-panel
+    
     const item = currentData.find(i => i.slot === selectedSlot);
     if (item && item.id !== 0) {
         rightPanel.style.visibility = 'visible';
         document.getElementById('detail-name').innerText = item.name;
         document.getElementById('detail-desc').innerText = `Vật phẩm: ${item.name}\nSố lượng: ${item.count}`;
         document.getElementById('detail-img').src = itemImages[item.id] || 'assets/default.png';
-    } else { rightPanel.style.visibility = 'hidden'; }
+    } else { 
+        rightPanel.style.visibility = 'hidden'; 
+    }
 }
 
 /* ==========================================================
-   3. GỬI LỆNH VỀ PAWN
+   3. GỬI LỆNH VỀ PAWN (ĐÃ FIX LỖI DATA)
    ========================================================== */
 function actionItem(eventName) {
     if (selectedSlot === -1) return;
-    if (typeof Cef !== 'undefined') Cef.sendEvent(eventName, `["${selectedSlot}"]`);
+    
+    // FIX: Xóa dấu ngoặc kép để sscanf bên Pawn đọc được dạng mảng số (vd: [0])
+    if (typeof Cef !== 'undefined') {
+        Cef.sendEvent(eventName, `[${selectedSlot}]`);
+    }
 }
 
 function closeInventory() {
-    document.getElementById('inventory-wrapper').style.display = 'none';
-    if (typeof Cef !== 'undefined') Cef.sendEvent("inv_close", "[]");
+    const invWrapper = document.getElementById('inventory-wrapper');
+    if(invWrapper) invWrapper.style.display = 'none';
+    
+    if (typeof Cef !== 'undefined') {
+        Cef.sendEvent("inv_close", "[]");
+    }
 }
 
+// Chạy khởi tạo CEF khi web vừa load xong
 if (typeof Cef !== 'undefined') initCefInventory();
