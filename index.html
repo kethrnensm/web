@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CEF Example Web</title>
+    <title>CEF Mobile SA-MP</title>
+    
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="hunger.css">
     <link rel="stylesheet" href="menu.css">
@@ -12,17 +13,15 @@
 
     <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
     <script>
-        // Khởi tạo vConsole ngay lập tức
         window.vConsole = new window.VConsole();
     </script>
 </head>
 <body>
+
     <div id="alert-overlay" class="hidden">
         <div class="alert-box">
             <div class="alert-content">
-                <div class="alert-icon">
-                    <span>?</span>
-                </div>
+                <div class="alert-icon"><span>?</span></div>
                 <div class="alert-title" id="alert-title">Confirm Title</div>
                 <div class="alert-message" id="alert-message">Confirm Message</div>
                 <div class="alert-buttons">
@@ -32,25 +31,28 @@
             </div>
         </div>
     </div>
-    <div id="notify-container"></div>
-<div class="game-hud-container">
-  <div class="hud-capsule">
-    <img src="res/restaurant.png" class="hud-icon" alt="Food">
-    <div class="hud-track">
-      <div id="hunger-bar" class="hud-fill" style="width: 100%;"></div>
-    </div>
-    <span id="hunger-text" class="hud-text">100%</span>
-  </div>
 
-  <div class="hud-capsule">
-    <img src="res/water.png" class="hud-icon" alt="Water">
-    <div class="hud-track">
-      <div id="water-bar" class="hud-fill" style="width: 100%;"></div>
+    <div id="notify-container"></div>
+
+    <div class="game-hud-container">
+        <div class="hud-capsule">
+            <img src="res/restaurant.png" class="hud-icon" alt="Food">
+            <div class="hud-track">
+                <div id="hunger-bar" class="hud-fill" style="width: 100%;"></div>
+            </div>
+            <span id="hunger-text" class="hud-text">100%</span>
+        </div>
+
+        <div class="hud-capsule">
+            <img src="res/water.png" class="hud-icon" alt="Water">
+            <div class="hud-track">
+                <div id="water-bar" class="hud-fill" style="width: 100%;"></div>
+            </div>
+            <span id="water-text" class="hud-text">100%</span>
+        </div>
     </div>
-    <span id="water-text" class="hud-text">100%</span>
-  </div>
-</div>
-      <div class="radial-overlay" id="radialMenuOverlay" style="display: none;">
+
+    <div class="radial-overlay" id="radialMenuOverlay" style="display: none;">
         <div class="radial-menu">
             <div class="radial-bg"></div>
 
@@ -104,8 +106,9 @@
                 CLOSE
             </div>
         </div>
-      </div>
-     <div class="inventory-wrapper">
+    </div>
+    
+    <div class="inventory-wrapper" id="inventory-wrapper" style="display: none;">
         <div class="left-panel">
             <div class="header">
                 <h1>TÚI ĐỒ CÁ NHÂN</h1>
@@ -113,12 +116,12 @@
             </div>
             <div class="sub-header">
                 <span class="category">TACTICAL EQUIPMENT</span>
-                <span class="capacity">BALO LV.0 - 9 SLOT</span>
+                <span class="capacity">BALO LV.0 - 15 SLOT</span>
             </div>
             <div class="grid-container" id="grid-container">
                 </div>
         </div>
-         
+        
         <div class="right-panel" id="right-panel">
             <div class="item-preview">
                 <img id="detail-img" src="" alt="Preview">
@@ -129,14 +132,16 @@
             
             <div class="action-btns">
                 <button class="btn btn-use" onclick="actionItem('inv_use_item')">⚡ SỬ DỤNG</button>
-                <button class="btn btn-trade" onclick="actionItem('inv_trade_item')">🤝 GIAO DỊCH</button>
-                <button class="btn btn-delete" onclick="actionItem('inv_delete_item')">🗑 XOÁ</button>
+                <button class="btn btn-trade" onclick="actionItem('inv_give_item')">🤝 GIAO DỊCH</button>
+                <button class="btn btn-delete" onclick="actionItem('inv_drop_item')">🗑 XOÁ</button>
             </div>
         </div>
-     </div>
+    </div>
+
     <script src="script.js"></script>
     <script src="hunger.js"></script>
     <script src="menu.js"></script>
     <script src="inv.js"></script>
+
 </body>
 </html>
