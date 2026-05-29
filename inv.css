@@ -14,7 +14,7 @@ body {
     /* Không để display: none ở body để không làm ẩn HUD game */
 }
 
-/* === KHUNG BAO BỌC CHÍNH (Đã fix hiển thị) === */
+/* === KHUNG BAO BỌC CHÍNH === */
 .inventory-wrapper {
     display: none; /* Mặc định ẩn, chỉ hiện khi JS gọi */
     justify-content: center;
@@ -27,6 +27,7 @@ body {
     top: 0;
     left: 0;
     z-index: 1000;
+    gap: 20px; /* Tạo khoảng cách đều giữa bảng trái và phải */
 }
 
 /* === BẢNG TRÁI (KHUNG LƯỚI GRID) === */
@@ -37,7 +38,6 @@ body {
     border-radius: 5px;
     box-shadow: 0 0 15px rgba(0,0,0,0.5);
     position: relative;
-    margin-right: 20px;
 }
 
 .header {
@@ -63,12 +63,13 @@ body {
 }
 
 .close-btn:hover {
-    color: white;
+    color: #ff4757; /* Chuyển sang màu đỏ khi hover cho nút Tắt */
 }
 
+/* === THANH THÔNG TIN (SUB-HEADER) === */
 .sub-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Tự dàn đều: Trái - Giữa - Phải */
     align-items: center;
     margin-top: 10px;
     padding-bottom: 10px;
@@ -81,21 +82,51 @@ body {
     font-size: 12px;
     font-weight: bold;
     letter-spacing: 1px;
+    flex: 1;
 }
 
 .sub-header .capacity {
     color: white;
     font-size: 12px;
     font-weight: bold;
+    flex: 1;
+    text-align: center;
 }
 
-/* Cấu trúc lưới item 5 cột */
+#inventory-weight {
+    font-size: 13px;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 0 5px rgba(0,0,0,0.5);
+    flex: 1;
+    text-align: right; /* Đẩy chữ cân nặng sát mép phải */
+    transition: color 0.3s ease;
+}
+
+/* === LƯỚI ITEM === */
 .grid-container {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 8px;
     max-height: 400px;
     overflow-y: auto;
+    padding-right: 5px; /* Chừa không gian cho thanh cuộn */
+}
+
+/* Tùy chỉnh thanh cuộn (Scrollbar) cho Game UI */
+.grid-container::-webkit-scrollbar {
+    width: 6px;
+}
+.grid-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+.grid-container::-webkit-scrollbar-thumb {
+    background: #00cec9;
+    border-radius: 10px;
+}
+.grid-container::-webkit-scrollbar-thumb:hover {
+    background: #01e3dd;
 }
 
 .item-slot {
@@ -158,13 +189,13 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    visibility: hidden; /* Mặc định ẩn */
+    visibility: hidden; /* Mặc định ẩn, hiện khi bấm vào đồ */
 }
 
 .item-preview {
     width: 150px;
     height: 150px;
-    background: radial-gradient(circle, rgba(0, 100, 255, 0.2) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(0, 206, 201, 0.15) 0%, transparent 70%);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -178,7 +209,7 @@ body {
 }
 
 .right-panel h2 {
-    font-size: 26px;
+    font-size: 22px;
     text-transform: uppercase;
     margin-bottom: 5px;
     text-align: center;
@@ -198,6 +229,7 @@ body {
     text-align: center;
     margin-bottom: auto;
     padding-bottom: 30px;
+    line-height: 1.5;
 }
 
 /* Hệ thống nút bấm */
@@ -224,8 +256,10 @@ body {
 }
 
 .btn-use { background: #00cec9; color: black; }
-.btn-use:hover { background: #01e3dd; }
+.btn-use:hover { background: #01e3dd; box-shadow: 0 0 10px rgba(0, 206, 201, 0.5); }
+
 .btn-trade { background: rgba(255, 255, 255, 0.05); color: white; border: 1px solid rgba(255, 255, 255, 0.1); }
 .btn-trade:hover { background: rgba(255, 255, 255, 0.1); }
+
 .btn-delete { background: rgba(255, 0, 0, 0.1); color: #ff4757; }
 .btn-delete:hover { background: rgba(255, 0, 0, 0.2); }
