@@ -19,6 +19,10 @@ let lastTapTime = 0;
 function initCefInventory() {
     Cef.registerEventCallback("render_inventory", "renderInventoryEvent");
     Cef.registerEventCallback("toggle_inventory", "toggleInventoryEvent");
+    
+    // Đăng ký nhận sự kiện cập nhật cân nặng từ Pawn gửi về
+    Cef.registerEventCallback("update_inventory_weight", "updateWeightEvent");
+    
     console.log("[CEF Mobile] Hệ thống Balo đã sẵn sàng!");
 }
 
@@ -38,6 +42,28 @@ function toggleInventoryEvent(eventData) {
     const inv = document.getElementById('inventory-wrapper');
     if (inv) inv.style.display = isVisible ? 'flex' : 'none';
     if (!isVisible) selectedSlot = -1;
+}
+
+// Hàm mới xử lý cân nặng Balo
+function updateWeightEvent(eventData) {
+    try {
+        const data = JSON.parse(eventData);
+        const currentWeight = data[0];
+        const maxWeight = data[1];
+        
+        // Tìm thẻ hiển thị cân nặng trên HTML (Bạn cần thêm thẻ id="inventory-weight" vào HTML)
+        const weightDisplay = document.getElementById('inventory-weight');
+        if (weightDisplay) {
+            weightDisplay.innerText = `Cân nặng: ${currentWeight.toFixed(2)} / ${maxWeight.toFixed(2)} kg`;
+            
+            // Nếu Balo đầy/quá tải, chữ sẽ đổi sang màu đỏ để cảnh báo
+            if (currentWeight >= maxWeight) {
+                weightDisplay.style.color = "#ff5252"; 
+            } else {
+                weightDisplay.style.color = "#ffffff";
+            }
+        }
+    } catch (e) { console.error("Lỗi update weight:", e); }
 }
 
 /* ==========================================================
@@ -83,7 +109,7 @@ function updateRightPanel() {
 }
 
 /* ==========================================================
-   3. GỬI LỆNH VỀ PAWN (FIXED: ĐÚNG TÊN EVENT)
+   3. GỬI LỆNH VỀ PAWN
    ========================================================== */
 function actionItem(eventName) {
     if (selectedSlot === -1) return;
