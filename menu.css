@@ -5,13 +5,11 @@
     position: fixed;
     top: 0; left: 0; 
     width: 100vw; height: 100vh;
-    background: rgba(0, 0, 0, 0.6); /* Tăng độ tối lên một chút để nổi bật menu */
+    background: rgba(0, 0, 0, 0.6);
     display: none; 
     justify-content: center; 
     align-items: center;
     z-index: 10000;
-    
-    /* Chống bôi đen văn bản hoặc hiện khung chọn khi chạm nhanh trên điện thoại */
     -webkit-user-select: none;
     user-select: none;
     -webkit-touch-callout: none;
@@ -29,7 +27,6 @@
     align-items: center;
 }
 
-/* Vòng nền đen và vạch chia ô */
 .radial-bg {
     position: absolute;
     top: 0; left: 0; 
@@ -39,16 +36,15 @@
         from 20deg,
         rgba(255, 255, 255, 0.15) 0deg,      
         rgba(255, 255, 255, 0.15) 2px,       
-        rgba(255, 255, 255, 0.0) 2px, /* Sửa lại vạch chia cho sắc nét hơn */
+        rgba(255, 255, 255, 0.0) 2px, 
         rgba(15, 15, 18, 0.98) 2px,         
         rgba(15, 15, 18, 0.98) 40deg        
     );
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
     z-index: 1;           
-    pointer-events: none; /* Tuyệt đối không chặn click */
+    pointer-events: none; 
 }
 
-/* Khung định vị trí xoay cho từng ô */
 .menu-item-wrapper {
     position: absolute;
     top: 50%; left: 50%;
@@ -57,7 +53,7 @@
 }
 
 /* ==========================================================
-   CÁC Ô TÍNH NĂNG (BUTTON / DIV)
+   CÁC Ô TÍNH NĂNG (BUTTON)
    ========================================================== */
 .menu-item {
     transform: rotate(calc(var(--i) * -40deg));
@@ -70,13 +66,11 @@
     cursor: pointer;
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     pointer-events: auto; 
-    
-    /* Reset thuộc tính nếu bạn dùng thẻ <button> */
     background: transparent;
     border: none;
     outline: none;
     padding: 0;
-    -webkit-tap-highlight-color: transparent; /* Xóa khung viền xanh mặc định của Android khi tap */
+    -webkit-tap-highlight-color: transparent;
 }
 
 .menu-item i {
@@ -96,7 +90,6 @@
     letter-spacing: 0.5px;
 }
 
-/* Hiệu ứng khi Hover chuột (PC) hoặc Chạm tay vào (Mobile) */
 .menu-item:hover, .menu-item:active {
     transform: rotate(calc(var(--i) * -40deg)) scale(1.15); 
 }
@@ -106,7 +99,7 @@
 }
 
 /* ==========================================================
-   NÚT CLOSE Ở TÂM VÒNG TRÒN
+   NÚT CLOSE Ở TÂM
    ========================================================== */
 .menu-center-btn {
     position: absolute;
@@ -123,8 +116,6 @@
     box-shadow: 0 0 15px rgba(0, 206, 201, 0.2) inset, 0 0 10px rgba(0,0,0,0.5);
     transition: all 0.2s ease;
     z-index: 20; 
-    
-    /* Reset thuộc tính nếu dùng <button> */
     background: #1a1a1e;
     border: 2px solid #00cec9;
     outline: none;
