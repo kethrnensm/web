@@ -1,16 +1,25 @@
-/* Lớp phủ làm tối màn hình game */
+/* ==========================================================
+   LỚP PHỦ TOÀN MÀN HÌNH (OVERLAY)
+   ========================================================== */
 .radial-overlay {
     position: fixed;
     top: 0; left: 0; 
     width: 100vw; height: 100vh;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6); /* Tăng độ tối lên một chút để nổi bật menu */
     display: none; 
     justify-content: center; 
     align-items: center;
     z-index: 10000;
+    
+    /* Chống bôi đen văn bản hoặc hiện khung chọn khi chạm nhanh trên điện thoại */
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
 }
 
-/* Khung chứa Menu */
+/* ==========================================================
+   KHUNG CHỨA MENU TRÒN
+   ========================================================== */
 .radial-menu {
     position: relative;
     width: 350px; 
@@ -20,7 +29,7 @@
     align-items: center;
 }
 
-/* Nền đen tròn và vạch chia ô */
+/* Vòng nền đen và vạch chia ô */
 .radial-bg {
     position: absolute;
     top: 0; left: 0; 
@@ -28,14 +37,15 @@
     border-radius: 50%;
     background: repeating-conic-gradient(
         from 20deg,
-        rgba(255, 255, 255, 0.2) 0deg,      
-        rgba(255, 255, 255, 0.2) 2px,       
-        rgba(30, 30, 35, 0.95) 2px,         
-        rgba(30, 30, 35, 0.95) 40deg        
+        rgba(255, 255, 255, 0.15) 0deg,      
+        rgba(255, 255, 255, 0.15) 2px,       
+        rgba(255, 255, 255, 0.0) 2px, /* Sửa lại vạch chia cho sắc nét hơn */
+        rgba(15, 15, 18, 0.98) 2px,         
+        rgba(15, 15, 18, 0.98) 40deg        
     );
-    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.6);
-    z-index: 1;           /* Lớp nền dưới cùng */
-    pointer-events: none; /* Không chặn các tương tác click/touch */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    z-index: 1;           
+    pointer-events: none; /* Tuyệt đối không chặn click */
 }
 
 /* Khung định vị trí xoay cho từng ô */
@@ -43,10 +53,12 @@
     position: absolute;
     top: 50%; left: 50%;
     transform: rotate(calc(var(--i) * 40deg)) translateY(-115px);
-    z-index: 10; /* Đẩy nổi lên trên lớp nền đen */
+    z-index: 10; 
 }
 
-/* Ô chứa Icon và Text */
+/* ==========================================================
+   CÁC Ô TÍNH NĂNG (BUTTON / DIV)
+   ========================================================== */
 .menu-item {
     transform: rotate(calc(var(--i) * -40deg));
     display: flex; 
@@ -56,14 +68,22 @@
     width: 80px; height: 80px;
     margin-top: -40px; margin-left: -40px; 
     cursor: pointer;
-    transition: all 0.2s ease;
-    pointer-events: auto; /* Đảm bảo nhận trọn vẹn sự kiện click */
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: auto; 
+    
+    /* Reset thuộc tính nếu bạn dùng thẻ <button> */
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent; /* Xóa khung viền xanh mặc định của Android khi tap */
 }
 
 .menu-item i {
     color: #00cec9; 
     font-size: 24px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    transition: color 0.2s, text-shadow 0.2s;
 }
 
 .menu-item span {
@@ -73,24 +93,25 @@
     font-weight: bold;
     text-align: center;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-/* Hiệu ứng Phóng to / Đổi màu khi chạm */
+/* Hiệu ứng khi Hover chuột (PC) hoặc Chạm tay vào (Mobile) */
 .menu-item:hover, .menu-item:active {
     transform: rotate(calc(var(--i) * -40deg)) scale(1.15); 
 }
 .menu-item:hover i, .menu-item:active i {
     color: #ffffff;
-    text-shadow: 0 0 10px #00cec9;
+    text-shadow: 0 0 12px #00cec9;
 }
 
-/* Nút CLOSE ở giữa vòng tròn */
+/* ==========================================================
+   NÚT CLOSE Ở TÂM VÒNG TRÒN
+   ========================================================== */
 .menu-center-btn {
     position: absolute;
     width: 85px; height: 85px;
     border-radius: 50%;
-    background: #1a1a1e;
-    border: 2px solid #00cec9;
     color: #00cec9;
     font-family: 'Arial', sans-serif;
     font-size: 13px;
@@ -99,13 +120,21 @@
     justify-content: center; 
     align-items: center;
     cursor: pointer;
-    box-shadow: 0 0 15px rgba(0, 206, 201, 0.2) inset;
-    transition: 0.2s;
-    z-index: 20; /* Luôn nằm trên cùng */
+    box-shadow: 0 0 15px rgba(0, 206, 201, 0.2) inset, 0 0 10px rgba(0,0,0,0.5);
+    transition: all 0.2s ease;
+    z-index: 20; 
+    
+    /* Reset thuộc tính nếu dùng <button> */
+    background: #1a1a1e;
+    border: 2px solid #00cec9;
+    outline: none;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .menu-center-btn:hover, .menu-center-btn:active {
     background: #00cec9;
     color: #1a1a1e;
-    box-shadow: 0 0 20px #00cec9;
+    box-shadow: 0 0 25px #00cec9;
+    transform: scale(1.05);
 }
