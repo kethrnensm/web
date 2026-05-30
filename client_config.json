@@ -1,7 +1,11 @@
 {
-  "client_config": {
-    "version_code": 1,
-    "url_launcher": "https://heromc.tokyo/launcher.apk",
-    "url_cache_files": "https://heromc.tokyo/files.json"
-  }
+    "client_config": {
+        "app_server_status" : true,
+        "app_beta_status" : false,
+        "game_version" : "1.0.0",
+        "game_url" : "https://samp-mobile.shop/launcherarizona.apk",
+        "version_code": 130,
+        "url_launcher"",
+        "url_cache_files": "https://samp-mobile.shop/files.json"
+    }
 }
