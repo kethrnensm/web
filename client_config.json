@@ -1,0 +1,7 @@
+{
+  "client_config": {
+    "version_code": 1,
+    "url_launcher": "https://heromc.tokyo/launcher.apk",
+    "url_cache_files": "https://heromc.tokyo/files.json"
+  }
+}
