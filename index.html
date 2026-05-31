@@ -1,150 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CEF Mobile SA-MP</title>
-    
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="hunger.css">
-    <link rel="stylesheet" href="menu.css">
-    <link rel="stylesheet" href="inv.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
-    <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
-    <script>
-        window.vConsole = new window.VConsole();
-    </script>
+    <style>
+        body { background: rgba(0,0,0,0.7); color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background: #222; padding: 20px; border-radius: 10px; border: 2px solid #444; width: 300px; }
+        button { width: 100%; padding: 10px; margin-top: 10px; cursor: pointer; background: #e74c3c; border: none; color: white; }
+    </style>
 </head>
 <body>
-
-    <div id="alert-overlay" class="hidden">
-        <div class="alert-box">
-            <div class="alert-content">
-                <div class="alert-icon"><span>?</span></div>
-                <div class="alert-title" id="alert-title">Confirm Title</div>
-                <div class="alert-message" id="alert-message">Confirm Message</div>
-                <div class="alert-buttons">
-                    <button id="okay-button" class="okay-button">Okay</button>
-                    <button id="cancel-button" class="cancel-button">Cancel</button>
-                </div>
-            </div>
-        </div>
+    <div class="box">
+        <h2>Thông tin nhân vật</h2>
+        <p>Tên: <span id="name">...</span></p>
+        <p>Tiền: <span id="money">0</span>$</p>
+        <p>Cấp độ: <span id="level">0</span></p>
+        <button onclick="closeUI()">ĐÓNG</button>
     </div>
 
-    <div id="notify-container"></div>
+    <script>
+        // Khởi tạo đối tượng cef để nhận dữ liệu từ Game (Android -> Web)
+        window.cef = {
+            emit: function(event, data) {
+                if (event === "updateStats") {
+                    const stats = JSON.parse(data);
+                    document.getElementById('name').innerText = stats.name;
+                    document.getElementById('money').innerText = stats.money;
+                    document.getElementById('level').innerText = stats.level;
+                }
+            }
+        };
 
-    <div class="game-hud-container">
-        <div class="hud-capsule">
-            <img src="res/restaurant.png" class="hud-icon" alt="Food">
-            <div class="hud-track">
-                <div id="hunger-bar" class="hud-fill" style="width: 100%;"></div>
-            </div>
-            <span id="hunger-text" class="hud-text">100%</span>
-        </div>
-
-        <div class="hud-capsule">
-            <img src="res/water.png" class="hud-icon" alt="Water">
-            <div class="hud-track">
-                <div id="water-bar" class="hud-fill" style="width: 100%;"></div>
-            </div>
-            <span id="water-text" class="hud-text">100%</span>
-        </div>
-    </div>
-
-    <div class="radial-overlay" id="radialMenuOverlay" style="display: none;">
-        <div class="radial-menu">
-            <div class="radial-bg"></div>
-
-            <div class="menu-item-wrapper" style="--i: 0;">
-                <button class="menu-item" onclick="selectRadialItem('thongtin')">
-                    <i class="fa-solid fa-user"></i><span>THÔNG TIN</span>
-                </button>
-            </div>
-            <div class="menu-item-wrapper" style="--i: 1;">
-                <button class="menu-item" onclick="selectRadialItem('balo')">
-                    <i class="fa-solid fa-briefcase"></i><span>BALO</span>
-                </button>
-            </div>
-            <div class="menu-item-wrapper" style="--i: 2;">
-                <button class="menu-item" onclick="selectRadialItem('khoxe')">
-                    <i class="fa-solid fa-car"></i><span>KHO XE</span>
-                </button>
-            </div>
-            <div class="menu-item-wrapper" style="--i: 3;">
-                <button class="menu-item" onclick="selectRadialItem('congviec')">
-                    <i class="fa-solid fa-clipboard-user"></i><span>CÔNG VIỆC</span>
-                </button>
-            </div>
-            <div class="menu-item-wrapper" style="--i: 4;">
-                <button class="menu-item" onclick="selectRadialItem('diemdanh')">
-                    <i class="fa-solid fa-calendar-check"></i><span>ĐIỂM DANH</span>
-                </button>
-            </div>
-            <div class="menu-item-wrapper" style="--i: 5;">
-                <button class="menu-item" onclick="selectRadialItem('cuahang')">
-                    <i class="fa-solid fa-cart-shopping"></i><span>CỬA HÀNG</span>
-                </button>
-            </div>
-            <div class="menu-item-wrapper" style="--i: 6;">
-                <button class="menu-item" onclick="selectRadialItem('bangxephang')">
-                    <i class="fa-solid fa-ranking-star"></i><span>BẢNG XẾP HẠNG</span>
-                </button>
-            </div>
-            <div class="menu-item-wrapper" style="--i: 7;">
-                <button class="menu-item" onclick="selectRadialItem('giayphep')">
-                    <i class="fa-solid fa-id-card"></i><span>GIẤY PHÉP</span>
-                </button>
-            </div>
-            <div class="menu-item-wrapper" style="--i: 8;">
-                <button class="menu-item" onclick="selectRadialItem('timduong')">
-                    <i class="fa-solid fa-map-location-dot"></i><span>TÌM ĐƯỜNG</span>
-                </button>
-            </div>
-
-            <button class="menu-center-btn" onclick="closeRadialMenu()">
-                CLOSE
-            </button>
-        </div>
-    </div>
-    
-    <div class="inventory-wrapper" id="inventory-wrapper" style="display: none;">
-        <div class="left-panel">
-            <div class="header">
-                <h1>TÚI ĐỒ CÁ NHÂN</h1>
-                <button class="close-btn" onclick="closeInventory()">✖</button>
-            </div>
-            <div class="sub-header">
-                <span class="category">TACTICAL EQUIPMENT</span>
-                <span class="capacity">BALO LV.0 - 15 SLOT</span>
-                <span id="inventory-weight" style="margin-left: auto; font-size: 13px; font-weight: bold; color: #ffffff; text-shadow: 0 0 5px rgba(0,0,0,0.5);">
-                    Cân nặng: 0.00 / 30.00 kg
-                </span>
-            </div>
-            <div class="grid-container" id="grid-container">
-            </div>
-        </div>
-        
-        <div class="right-panel" id="right-panel">
-            <div class="item-preview">
-                <img id="detail-img" src="" alt="Preview">
-            </div>
-            <h2 id="detail-name">TÊN VẬT PHẨM</h2>
-            <span class="rarity">RARE</span>
-            <p class="desc" id="detail-desc">Mô tả vật phẩm hiện tại...</p>
-            
-            <div class="action-btns">
-                <button class="btn btn-use" onclick="actionItem('inv_use_item')">⚡ SỬ DỤNG</button>
-                <button class="btn btn-trade" onclick="actionItem('inv_give_item')">🤝 GIAO DỊCH</button>
-                <button class="btn btn-delete" onclick="actionItem('inv_drop_item')">🗑 XOÁ</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
-    <script src="hunger.js"></script>
-    <script src="menu.js"></script>
-    <script src="inv.js"></script>
-
+        // Gửi dữ liệu về Game (Web -> Android -> Server)
+        function closeUI() {
+            if (window.cef && window.cef.send) {
+                window.cef.send("close_ui", "{}");
+            }
+        }
+    </script>
 </body>
 </html>
